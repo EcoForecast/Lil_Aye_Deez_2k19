@@ -6,3 +6,8 @@ Contact Information
 Taylor Perez
 ttperez@bu.edu
 401-834-0343
+
+
+Juliette Bateman
+jbateman@bu.edu
+732-966-7586
