@@ -11,3 +11,11 @@ ttperez@bu.edu
 Juliette Bateman
 jbateman@bu.edu
 732-966-7586
+
+John Foster
+fosterj@bu.edu
+651-558-7362
+
+Carina terry
+cterry@bu.edu
+817-821-7115
