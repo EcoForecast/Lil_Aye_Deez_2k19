@@ -1,3 +1,12 @@
 # Lil_Aye_Deez_2k19
 GE585 Spring 2019: CDC Aedes mosquito forecast competition
-Casey's email: caseyk@bu.edu
+
+Contact Information
+
+Taylor Perez
+ttperez@bu.edu
+401-834-0343
+
+Casey Kelly
+caseyk@bu.edu
+908-547-7209
