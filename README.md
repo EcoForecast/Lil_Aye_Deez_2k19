@@ -16,9 +16,8 @@ John Foster
 fosterj@bu.edu
 651-558-7362
 
-
 Casey Kelly
-caseyk@bu.edu
+caseykbuedu
 908-547-7209
 
 Carina terry
