@@ -4,8 +4,16 @@
 
 library(tidyverse)
 
+# read csv files from the web
+csv <-  c("https://predict.cdc.gov/api/v1/attachments/aedes_challenge_2019/aedes_collections_california.csv", "https://predict.cdc.gov/api/v1/attachments/aedes_challenge_2019/aedes_collections_connecticut.csv",
+         "https://predict.cdc.gov/api/v1/attachments/aedes_challenge_2019/aedes_collections_florida.csv", "https://predict.cdc.gov/api/v1/attachments/aedes_challenge_2019/aedes_collections_new_jersey.csv",
+         "https://predict.cdc.gov/api/v1/attachments/aedes_challenge_2019/aedes_collections_new_york.csv", "https://predict.cdc.gov/api/v1/attachments/aedes_challenge_2019/aedes_collections_north_carolina.csv",
+         "https://predict.cdc.gov/api/v1/attachments/aedes_challenge_2019/aedes_collections_texas.csv", "https://predict.cdc.gov/api/v1/attachments/aedes_challenge_2019/aedes_collections_wisconsin.csv")
+
+
 # read csv files in working directory
-csv <- list.files(pattern = "aedes_collections_.*\\.csv")
+# csv <- list.files(pattern = "aedes_collections_.*\\.csv")
+
 
 # put all csv files in a list
 data.list <- lapply(csv, read.csv, na.strings = "NA")
