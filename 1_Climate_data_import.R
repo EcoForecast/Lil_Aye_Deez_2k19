@@ -16,7 +16,7 @@ county.locations[,3] = c(-118.243, -117.831, -116.419, -117.161, -82.302, -81.95
 
 ### downloading the data for each county
 clim.dat <- list()                                 # create an empty list to store climate variables
-for(i in 1:length(subset.counties)){               # grab the data 
+for(i in 1:length(aedes.data$subset.counties)){               # grab the data 
   clim.dat[[i]] <- daymetr::download_daymet(site=county.locations[i,1],
                                             lat=county.locations[i,2],
                                             lon=county.locations[i,3],
@@ -24,30 +24,30 @@ for(i in 1:length(subset.counties)){               # grab the data
                                             end=2017,
                                             internal=TRUE)$data
 }
-for(i in 1:length(subset.counties)){               # add dates 
+for(i in 1:length(aedes.data$subset.counties)){               # add dates 
   clim.dat[[i]]$date <- as.Date(paste(clim.dat[[i]]$year,clim.dat[[i]]$yday,sep = "-"),"%Y-%j")
 }
-names(clim.dat) <- subset.counties                 # name elements in list by county
+names(clim.dat) <- aedes.data$subset.counties                 # name elements in list by county
 
 ### plotting minimum and maximum temperatures for each county
-for(i in 1:length(subset.counties)){               # plot minimum temperature
+for(i in 1:length(aedes.data$subset.counties)){               # plot minimum temperature
   plot(clim.dat[[i]]$date, clim.dat[[i]]$tmin..deg.c., 
        xlab = "Time", 
        ylab = "Minimum Temperature (Degrees C)", 
-       main = subset.counties[i])
+       main = aedes.data$subset.counties[i])
 }
-for(i in 1:length(subset.counties)){               # plot maximum temperature
+for(i in 1:length(aedes.data$subset.counties)){               # plot maximum temperature
   plot(clim.dat[[i]]$date, clim.dat[[i]]$tmax..deg.c., 
        xlab = "Time", 
        ylab = "Maximum Temperature (Degrees C)", 
-       main = subset.counties[i])
+       main = aedes.data$subset.counties[i])
 }
 
 ### plotting precipitation for each county
-for(i in 1:length(subset.counties)){               # plot total precipitation
+for(i in 1:length(aedes.data$subset.counties)){               # plot total precipitation
   plot(clim.dat[[i]]$date, clim.dat[[i]]$prcp..mm.day., 
        xlab = "Time", 
        ylab = "Precipitation (mm/day)", 
-       main = subset.counties[i])
+       main = aedes.data$subset.counties[i])
 }
 
