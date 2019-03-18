@@ -2,7 +2,11 @@
 # and subsets the counties to a manageable number for hindcasting
 # and (potentially) forecasting
 
+# Function to be sourced in "Climate_data_import.R
+
 library(tidyverse)
+
+subset_aedes_data <- function(){
 
 # read csv files from the web
 csv <-  c("https://predict.cdc.gov/api/v1/attachments/aedes_challenge_2019/aedes_collections_california.csv", "https://predict.cdc.gov/api/v1/attachments/aedes_challenge_2019/aedes_collections_connecticut.csv",
@@ -85,33 +89,41 @@ if(length(which(county.training != county.validation)) != 0){
 # forecasting data set - includes 2018 - to be used for CDC forecast
 data.forecast <- subset(data.subset, state_county %in% county.training)
 
-# write CSVs 
-write_csv(data.training, "Aedes_Training_Data.csv")       # training data for hindcast
-write_csv(data.validation, "Aedes_Validation_Data.csv")   # hindcast validation
-write_csv(data.forecast, "Aedes_Forecast_Data.csv")       # training data for forecast
+aedes.data <- list(data.training = data.training,
+                   data.validation = data.validation,
+                   data.forecast = data.forecast,
+                   subset.counties = subset.counties)
 
-# quick and dirty time series plots by county
-# top row is number of mosquitoes collected by species
-# bottom row is a rough look at trapping effort
-par(mfrow = c(2,2))
-for(i in 1:length(unique(data.training$state_county))){
-  data.plot <- subset(data.training, state_county == county.training[i]) %>%
-    unite("year_month", year, month, sep = "_")
-  time <- 1:nrow(data.plot)
-  plot(time, data.plot$num_aegypti_collected,
-       type = "l",
-       main = county.training[i],
-       ylab = "Number Ae. aegypti collected")
-  plot(time, data.plot$num_albopictus_collected,
-       type = "l",
-       main = county.training[i],
-       ylab = "Number Ae. albopictus collected")
-  plot(time, data.plot$num_collection_events,
-       type = "l",
-       ylab = "Number of collection events")
-  plot(time, data.plot$num_trap_nights,
-       type = "l",
-       ylab = "Number of trap nights")
+return(aedes.data)
 }
+
+# # write CSVs 
+# write_csv(data.training, "Aedes_Training_Data.csv")       # training data for hindcast
+# write_csv(data.validation, "Aedes_Validation_Data.csv")   # hindcast validation
+# write_csv(data.forecast, "Aedes_Forecast_Data.csv")       # training data for forecast
+# 
+# # quick and dirty time series plots by county
+# # top row is number of mosquitoes collected by species
+# # bottom row is a rough look at trapping effort
+# par(mfrow = c(2,2))
+# for(i in 1:length(unique(data.training$state_county))){
+#   data.plot <- subset(data.training, state_county == county.training[i]) %>%
+#     unite("year_month", year, month, sep = "_")
+#   time <- 1:nrow(data.plot)
+#   plot(time, data.plot$num_aegypti_collected,
+#        type = "l",
+#        main = county.training[i],
+#        ylab = "Number Ae. aegypti collected")
+#   plot(time, data.plot$num_albopictus_collected,
+#        type = "l",
+#        main = county.training[i],
+#        ylab = "Number Ae. albopictus collected")
+#   plot(time, data.plot$num_collection_events,
+#        type = "l",
+#        ylab = "Number of collection events")
+#   plot(time, data.plot$num_trap_nights,
+#        type = "l",
+#        ylab = "Number of trap nights")
+# }
 
 
