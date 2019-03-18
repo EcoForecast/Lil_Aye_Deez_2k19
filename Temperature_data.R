@@ -83,7 +83,7 @@ California_SanBernardino.clim$date <- as.Date(paste(California_SanBernardino.cli
 California_SanDiego.clim$date <- as.Date(paste(California_SanDiego.clim$year,California_SanDiego.clim$yday,sep = "-"),"%Y-%j")
 Florida_Hillsborough.clim$date <- as.Date(paste(Florida_Hillsborough.clim$year,Florida_Hillsborough.clim$yday,sep = "-"),"%Y-%j")
 Florida_Lee.clim$date <- as.Date(paste(Florida_Lee.clim$year,Florida_Lee.clim$yday,sep = "-"),"%Y-%j")
-Florida_MiamiDate.climdate <- as.Date(paste(Florida_MiamiDade.clim$year,Florida_MiamiDade.clim$yday,sep = "-"),"%Y-%j")
+Florida_MiamiDade.clim$date <- as.Date(paste(Florida_MiamiDade.clim$year,Florida_MiamiDade.clim$yday,sep = "-"),"%Y-%j")
 Florida_Osceola.clim$date <- as.Date(paste(Florida_Osceola.clim$year,Florida_Osceola.clim$yday,sep = "-"),"%Y-%j")
 Florida_Pasco.clim$date <- as.Date(paste(Florida_Pasco.clim$year,Florida_Pasco.clim$yday,sep = "-"),"%Y-%j")
 Florida_Polk.clim$date <- as.Date(paste(Florida_Polk.clim$year,Florida_Polk.clim$yday,sep = "-"),"%Y-%j")
@@ -107,12 +107,25 @@ clim.dat[[11]] = Florida_St.Johns.clim
 
 for(i in 1:11){
   
-  plot(clim.dat[[i]]$date, clim.dat[[i]]$tmin..deg.c., xlab = "Time", ylab = "Minimum Temperature (Degrees C)", main = subset.counties[i])
+  plot(clim.dat[[i]]$m, clim.dat[[i]]$tmin..deg.c., xlab = "Time", ylab = "Minimum Temperature (Degrees C)", main = subset.counties[i])
 }
 
 for(i in 1:11){
   
-  plot(clim.dat[[i]]$date, clim.dat[[i]]$tmax..deg.c., xlab = "Time", ylab = "Maximum Temperature (Degrees C)", main = subset.counties[i])
+  plot(clim.dat[[i]]$year, clim.dat[[i]]$tmax..deg.c., xlab = "Time", ylab = "Maximum Temperature (Degrees C)", main = subset.counties[i])
 }
 
+
+
+##plotting the monthly average minimum and maximum temperatures for each county
+
+for(i in 1:11){
+  
+  plot(clim.dat.monthly[[i]]$date, clim.dat.monthly[[i]]$tmin..deg.c., xlab = "Time", ylab = "Minimum Temperature (Degrees C)", main = subset.counties[i])
+}
+
+for(i in 1:11){
+  
+  plot(clim.dat.monthly[[i]]$date, clim.dat.monthly[[i]]$tmax..deg.c., xlab = "Time", ylab = "Maximum Temperature (Degrees C)", main = subset.counties[i])
+}
 
