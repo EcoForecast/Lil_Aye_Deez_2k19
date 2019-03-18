@@ -2,6 +2,8 @@
 # and subsets the counties to a manageable number for hindcasting
 # and (potentially) forecasting
 
+# Function to be sourced in "Climate_data_import.R
+
 library(tidyverse)
 
 subset_aedes_data <- function(){
@@ -14,7 +16,7 @@ csv <-  c("https://predict.cdc.gov/api/v1/attachments/aedes_challenge_2019/aedes
 
 
 # read csv files in working directory
- csv <- list.files(pattern = "aedes_collections_.*\\.csv")
+# csv <- list.files(pattern = "aedes_collections_.*\\.csv")
 
 
 # put all csv files in a list
