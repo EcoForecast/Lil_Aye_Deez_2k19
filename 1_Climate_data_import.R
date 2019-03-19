@@ -51,3 +51,49 @@ for(i in 1:length(aedes.data$subset.counties)){               # plot total preci
        main = aedes.data$subset.counties[i])
 }
 
+##calculating relative humidity
+
+## water vapor saturation pressure equation:
+  ## pws = exp(20.386 - 5132/T)  (T in Kelvins) source: https://en.wikipedia.org/wiki/Vapour_pressure_of_water
+##relative humidity equation:
+  ## RH = pw/pws * 100   source: https://www.vaisala.com/sites/default/files/documents/Humidity_Conversion_Formulas_B210973EN-F.pdf
+
+## function to calculate relative humidity
+
+calc.humidity <- function(vapor.pres, temp, temp.units){
+  
+  ##convert to kelvin if temp is celsius or fahrenheit
+  if (temp.units == "C"){
+    temp = temp + 273.15
+  } 
+  if (temp.units == "F"){
+    temp = (temp + 459.67) * 5 / 9
+  }
+  
+  #calculate water vapor saturation pressure
+  vapor.pres.sat = exp(20.386 - (5132/temp))
+  
+  #convert to Pa
+  vapor.pres.sat = vapor.pres.sat * 133.32
+  
+  #calculate relative humidity 
+  RH = (vapor.pres / vapor.pres.sat) * 100
+  
+  RH
+  
+}
+
+##create a column for relative humidity 
+for(i in 1:length(aedes.data$subset.counties)){
+  RH = calc.humidity(clim.dat[[i]]$vp..Pa., clim.dat[[i]]$tmax..deg.c., "C")
+  clim.dat[[i]] = cbind(clim.dat[[i]], RH)
+}
+
+## plot relative humidity
+for(i in 1:length(aedes.data$subset.counties)){
+  plot(clim.dat[[i]]$date, clim.dat[[i]]$RH,
+       xlab = "Time", 
+       ylab = "Relative Humidity (% Saturation)", 
+       ylim = c(0,100),
+       main = aedes.data$subset.counties[i])
+}
