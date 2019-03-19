@@ -1,7 +1,14 @@
 # Lil_Aye_Deez_2k19
 GE585 Spring 2019: CDC Aedes mosquito forecast competition
 
-Contact Information
+### PULLING & VISUALIZING DATA
+
+-- Packages required:
+tidyverse, daymetr
+
+1. Run *1_Climate_data_import.R* to pull in and plot county-level temperature, precipitation, and humidity data (years 2013-2017).
+
+### CONTACT INFORMATION
 
 Taylor Perez
 ttperez@bu.edu
@@ -19,7 +26,7 @@ Casey Kelly
 caseyk@bu.edu
 908-547-7209
 
-Carina terry
+Carina Terry
 cterry@bu.edu
 817-821-7115
 
