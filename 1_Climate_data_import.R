@@ -76,7 +76,7 @@ calc.humidity <- function(vapor.pres, temp, temp.units){
   #convert to Pa
   vapor.pres.sat = vapor.pres.sat * 133.32
   
-  #calculate relative humidity (mmHg)
+  #calculate relative humidity 
   RH = (vapor.pres / vapor.pres.sat) * 100
   
   RH
