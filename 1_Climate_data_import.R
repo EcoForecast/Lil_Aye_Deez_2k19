@@ -97,3 +97,101 @@ for(i in 1:length(aedes.data$subset.counties)){
        ylim = c(0,100),
        main = aedes.data$subset.counties[i])
 }
+
+
+
+###MONTHLY DATA & PLOTS 
+
+library(zoo)
+
+#daily to monthly function 
+
+daily.to.monthly <- function(dat){
+  #  Get months from dates 
+  dat$Month <- format(dat$date, format = "%m")
+  
+  #  Get years from dates 
+  dat$Year <- format(dat$date, format="%Y")
+  
+  #  Aggregate each variable on months and year and get the monthly means
+  dat.monthly <- data.frame()
+  dat.prcp <- aggregate(dat$prcp..mm.day. ~ Month + Year , dat , mean)
+  dat.tmin <- aggregate(dat$tmin..deg.c. ~ Month + Year , dat ,  mean)
+  dat.tmax <- aggregate(dat$tmax..deg.c. ~ Month + Year , dat ,  mean )
+  dat.vp <- aggregate(dat$vp..Pa. ~ Month + Year , dat , mean )
+  dat.monthly <- cbind(prcp = dat.prcp[,3],tmin = dat.tmin[,3],tmax = dat.tmax[,3],vp = dat.vp[,3])
+  return(as.data.frame(dat.monthly))
+}
+
+#make a new empty list to store the new monthly average values
+clim.dat.monthly <- list()
+#add in parameter average monthly values using function
+for(i in 1:length(clim.dat)){
+  clim.dat.monthly[[i]] = daily.to.monthly(clim.dat[[i]])
+}
+
+daily.to.monthly.dates <- function(dat){
+  #  Get months from dates 
+  dat$Month <- format(dat$date, format = "%m")
+  
+  #  Get years from dates 
+  dat$Year <- format(dat$date,format="%Y")
+  
+  #  Aggregate each variable on months and year and get the monthly means
+  # I had to redo this because I wanted to ensure the dates lined up correctly...
+  #If i included it in the previous loop, the classes were altered (factor instead of numeric)
+  dat.prcp <- aggregate( dat$prcp..mm.day. ~ Month + Year , data = dat , FUN = mean)
+  dat.date <- paste(dat.prcp$Year, dat.prcp$Month, sep = "-")
+  dat.date <- as.Date(as.yearmon(dat.date))
+  return(dat.date)
+}
+#calculate date for one county, since theyre all the same
+dates <- daily.to.monthly.dates(clim.dat$`California_Los Angeles`)
+
+#add dates to list
+for(i in 1:length(aedes.data$subset.counties)){
+  
+  clim.dat.monthly[[i]]$date <- dates
+}
+#add name elements in list by county
+names(clim.dat.monthly) <- aedes.data$subset.counties                 
+
+
+
+### plotting minimum and maximum temperatures for each county
+for(i in 1:length(aedes.data$subset.counties)){               # plot minimum temperature
+  plot(clim.dat.monthly[[i]]$date, clim.dat.monthly[[i]]$tmin, 
+       xlab = "Time", 
+       ylab = "Avg Monthly Minimum Temperature (Degrees C)", 
+       main = aedes.data$subset.counties[i])
+}
+for(i in 1:length(aedes.data$subset.counties)){               # plot maximum temperature
+  plot(clim.dat.monthly[[i]]$date, clim.dat.monthly[[i]]$tmax, 
+       xlab = "Time", 
+       ylab = "Avg Monthly Maximum Temperature (Degrees C)", 
+       main = aedes.data$subset.counties[i])
+}
+
+### plotting precipitation for each county
+for(i in 1:length(aedes.data$subset.counties)){               # plot total precipitation
+  plot(clim.dat.monthly[[i]]$date, clim.dat.monthly[[i]]$prcp, 
+       xlab = "Time", 
+       ylab = "Avg Monthly Precipitation (mm/day)", 
+       main = aedes.data$subset.counties[i])
+}
+
+##create a column for monthly relative humidity 
+for(i in 1:length(aedes.data$subset.counties)){
+  RH = calc.humidity(clim.dat.monthly[[i]]$vp, clim.dat.monthly[[i]]$tmax, "C")
+  clim.dat.monthly[[i]] = cbind(clim.dat.monthly[[i]], RH)
+}
+
+## plot relative humidity
+for(i in 1:length(aedes.data$subset.counties)){
+  plot(clim.dat.monthly[[i]]$date, clim.dat.monthly[[i]]$RH,
+       xlab = "Time", 
+       ylab = "Avg Monthly Relative Humidity (% Saturation)", 
+       ylim = c(0,100),
+       main = aedes.data$subset.counties[i])
+}
+
