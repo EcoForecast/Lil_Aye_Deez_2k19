@@ -4,7 +4,7 @@ GE585 Spring 2019: CDC Aedes mosquito forecast competition
 ### PULLING & VISUALIZING DATA
 
 -- Packages required:
-tidyverse, daymetr
+tidyverse, daymetr, zoo
 
 1. Run *1_Climate_data_import.R* to pull in and plot county-level temperature, precipitation, and humidity data (years 2013-2017).
 
