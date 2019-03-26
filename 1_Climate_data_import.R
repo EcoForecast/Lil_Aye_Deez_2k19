@@ -199,8 +199,9 @@ for(i in 1:length(aedes.data$subset.counties)){
 }
 
 ### plot mosquito data
-for(i in 1:length(aedes.data$data.training$state_county)){
-   data.plot <- subset(aedes.data$data.training, aedes.data$data.training$state_county == aedes.data$subset.counties[i]) %>%
+for(i in 1:length(aedes.data$subset.counties)){
+   data.plot <- subset(aedes.data$data.training, 
+                       aedes.data$data.training$state_county == aedes.data$subset.counties[i]) %>%
        unite("year_month", year, month, sep = "_")
      time <- 1:nrow(data.plot)
     plot(time[1:length(data.plot$num_aegypti_collected)], data.plot$num_aegypti_collected,
