@@ -23,7 +23,6 @@ Random_Walk_Fit <- function(county.name, data.set, n.iter = 5000, inits = NULL){
   
   # create data list for JAGS
   data <- list(y = y,
-               x = y,
                n.month = ncol(y),
                R = diag(1,2,2))
   
@@ -50,8 +49,8 @@ Random_Walk_Fit <- function(county.name, data.set, n.iter = 5000, inits = NULL){
   
   j.model <- jags.model(file = textConnection(model),
                         data = data,
-                        inits = inits,
-                        n.chains = 3)
+                        n.chains = 3,
+                        inits = inits)
   jags.out <- coda.samples(model = j.model,
                            variable.names = c("SIGMA", "x"),
                            n.iter = n.iter)
