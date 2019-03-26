@@ -14,11 +14,6 @@ csv <-  c("https://predict.cdc.gov/api/v1/attachments/aedes_challenge_2019/aedes
          "https://predict.cdc.gov/api/v1/attachments/aedes_challenge_2019/aedes_collections_new_york.csv", "https://predict.cdc.gov/api/v1/attachments/aedes_challenge_2019/aedes_collections_north_carolina.csv",
          "https://predict.cdc.gov/api/v1/attachments/aedes_challenge_2019/aedes_collections_texas.csv", "https://predict.cdc.gov/api/v1/attachments/aedes_challenge_2019/aedes_collections_wisconsin.csv")
 
-
-# read csv files in working directory
-# csv <- list.files(pattern = "aedes_collections_.*\\.csv")
-
-
 # put all csv files in a list
 data.list <- lapply(csv, read.csv, na.strings = "NA")
 
@@ -76,6 +71,9 @@ diff.county <- setdiff(county.training, county.validation)
 
 # subset training data to only include counties in validation data
 data.training <- subset(data.training, !(state_county %in% diff.county))
+
+# need to sbset counties again
+subset.counties <- subset.counties[which(subset.counties != diff.county)]
 
 # unique counties again...
 county.training <- unique(data.training$state_county)
