@@ -7,7 +7,7 @@
 #' @param n.iter number of iterations, default = 5000
 #' @param inits initial conditions, default = NULL
 
-Random_Walk_Fit <- function(county.name, data.set, n.iter = 5000, inits = NULL){
+Random_Walk_Fit <- function(county.name, data.set, inits = NULL, n.adapt = 10000){
 
   # get county of interest and create a "year-month" column
   county.sub <- data.set %>% 
@@ -50,19 +50,9 @@ Random_Walk_Fit <- function(county.name, data.set, n.iter = 5000, inits = NULL){
   j.model <- jags.model(file = textConnection(model),
                         data = data,
                         n.chains = 3,
-                        inits = inits)
-  jags.out <- coda.samples(model = j.model,
-                           variable.names = c("SIGMA", "x"),
-                           n.iter = n.iter)
-  
-  # split output 
-  out <- list(params = NULL, predict = NULL)
-  mfit <- as.matrix(jags.out, chains = TRUE)
-  pred.cols <- grep("x[", colnames(mfit), fixed = TRUE)
-  chain.col <- which(colnames(mfit) == "CHAIN")
-  out$predict <- ecoforecastR::mat2mcmc.list(mfit[, c(chain.col, pred.cols)])
-  out$params <- ecoforecastR::mat2mcmc.list(mfit[, -pred.cols])
-  
-  return(out)
+                        inits = inits,
+                        n.adapt = n.adapt)
+
+  return(jags)
 
 }
