@@ -3,6 +3,7 @@
 #' modelled with multivariate normal process error as most counties are correlated
 #' 
 #' @param county.name Name of county of interest
+#' @param spp species, one of "albo" or "aegypti"
 #' @param data.set data
 #' @param n.iter number of iterations, default = 5000
 #' @param inits initial conditions, default = NULL
@@ -19,7 +20,7 @@ Random_Walk_Fit <- function(county.name, spp, data.set, inits = NULL, n.adapt = 
   y.aegypti <- aggregate(county.sub$num_aegypti_collected, by = list(county.sub$year_month), FUN = sum)[,2]
   
   # use appropriate data (which species?)
-  if(spp = "albo"){
+  if(spp == "albo"){
     y <- y.albo
   } else {
     y <- y.aegypti
@@ -27,8 +28,7 @@ Random_Walk_Fit <- function(county.name, spp, data.set, inits = NULL, n.adapt = 
   
   # create data list for JAGS
   data <- list(y = y,
-               n.month = ncol(y),
-               R = diag(1,2,2))
+               n.month = length(y))
   
   model <- "
   model{
