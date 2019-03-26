@@ -3,11 +3,11 @@
 #' modelled with multivariate normal process error as most counties are correlated
 #' 
 #' @param county.name Name of county of interest
-#' @param data.set data, default = data.training
+#' @param data.set data
 #' @param n.iter number of iterations, default = 5000
 #' @param inits initial conditions, default = NULL
 
-Random_Walk_Fit <- function(county.name, data.set = data.training, n.iter = 5000, inits = NULL){
+Random_Walk_Fit <- function(county.name, data.set, n.iter = 5000, inits = NULL){
 
   # get county of interest and create a "year-month" column
   county.sub <- data.set %>% 
