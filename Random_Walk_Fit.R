@@ -18,9 +18,10 @@ Random_Walk_Fit <- function(county.name, data.set = data.training, n.iter = 5000
   y.albo <- aggregate(county.sub$num_albopictus_collected, by = list(county.sub$year_month), FUN = sum)[,2]
   y.aegypti <- aggregate(county.sub$num_aegypti_collected, by = list(county.sub$year_month), FUN = sum)[,2]
   
-  # combine 
+  # combine and transpose
   y <- t(cbind(y.albo, y.aegypti))
   
+  # create data list for JAGS
   data <- list(y = y,
                x = y,
                n.month = ncol(y),
