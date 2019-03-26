@@ -7,7 +7,7 @@
 #' @param n.iter number of iterations, default = 5000
 #' @param inits initial conditions, default = NULL
 
-Random_Walk_Fit <- function(county.name, data.set, inits = NULL, n.adapt = 10000){
+Random_Walk_Fit <- function(county.name, spp, data.set, inits = NULL, n.adapt = 10000){
 
   # get county of interest and create a "year-month" column
   county.sub <- data.set %>% 
@@ -18,8 +18,12 @@ Random_Walk_Fit <- function(county.name, data.set, inits = NULL, n.adapt = 10000
   y.albo <- aggregate(county.sub$num_albopictus_collected, by = list(county.sub$year_month), FUN = sum)[,2]
   y.aegypti <- aggregate(county.sub$num_aegypti_collected, by = list(county.sub$year_month), FUN = sum)[,2]
   
-  # combine and transpose
-  y <- t(cbind(y.albo, y.aegypti))
+  # use appropriate data (which species?)
+  if(spp = "albo"){
+    y <- y.albo
+  } else {
+    y <- y.aegypti
+  }
   
   # create data list for JAGS
   data <- list(y = y,
@@ -31,19 +35,17 @@ Random_Walk_Fit <- function(county.name, data.set, inits = NULL, n.adapt = 10000
     
     #### Data Model
     for(i in 1:n.month){
-      y[1,i] ~ dpois(x[1,i])
-      y[2,i] ~ dpois(x[2,i])
+      y[i] ~ dpois(x[i])
     }
     
     #### Process Model
     for(i in 2:n.month){
-      x[1:2,i] ~ dmnorm(x[1:2,i-1], SIGMA)
+      x[i] ~ dnorm(x[i-1], tau_proc)
     }
     
     #### Priors
-    x[1,1] ~ dpois(5)
-    x[2,1] ~ dpois(5)
-    SIGMA ~ dwish(R, 3)
+    x[1] ~ dpois(5)
+    tau_proc ~ dgamma(0.01,0.01)
   
   }"
   
@@ -53,6 +55,6 @@ Random_Walk_Fit <- function(county.name, data.set, inits = NULL, n.adapt = 10000
                         inits = inits,
                         n.adapt = n.adapt)
 
-  return(jags)
+  return(j.model)
 
 }
