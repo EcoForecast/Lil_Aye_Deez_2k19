@@ -56,6 +56,14 @@ Random_Walk_Fit <- function(county.name, data.set, n.iter = 5000, inits = NULL){
                            variable.names = c("SIGMA", "x"),
                            n.iter = n.iter)
   
-  return(jags.out)
+  # split output 
+  out <- list(params = NULL, predict = NULL)
+  mfit <- as.matrix(jags.out, chains = TRUE)
+  pred.cols <- grep("x[", colnames(mfit), fixed = TRUE)
+  chain.col <- which(colnames(mfit) == "CHAIN")
+  out$predict <- ecoforecastR::mat2mcmc.list(mfit[, c(chain.col, pred.cols)])
+  out$params <- ecoforecastR::mat2mcmc.list(mfit[, -pred.cols])
+  
+  return(out)
 
 }
