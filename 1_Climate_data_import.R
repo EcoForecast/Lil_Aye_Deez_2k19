@@ -12,10 +12,10 @@ source("County_subset.R")
 aedes.data <- subset_aedes_data()
 
 ### reference table of county names and locations
-county.locations = matrix(NA, nrow = 11, ncol = 3)
+county.locations = matrix(NA, nrow = length(aedes.data$subset.counties), ncol = 3)
 county.locations[,1] = aedes.data$subset.counties
-county.locations[,2] = c(34.052, 33.716, 34.959, 32.716, 27.990, 26.663, 25.552, 28.102, 28.323, 27.862, 29.972)
-county.locations[,3] = c(-118.243, -117.831, -116.419, -117.161, -82.302, -81.954, -80.633, -81.076, -82.432, -81.691, -81.428)
+county.locations[,2] = c(34.052, 33.716, 34.959, 32.716, 27.990, 25.552, 28.102, 28.323, 27.862, 29.972)
+county.locations[,3] = c(-118.243, -117.831, -116.419, -117.161, -82.302, -80.633, -81.076, -82.432, -81.691, -81.428)
 
 ### downloading the data for each county
 clim.dat <- list()                                 # create an empty list to store climate variables
@@ -32,29 +32,7 @@ for(i in 1:length(aedes.data$subset.counties)){               # add dates
 }
 names(clim.dat) <- aedes.data$subset.counties                 # name elements in list by county
 
-###### DAILY PLOTS ######
 
-### plotting minimum and maximum temperatures for each county
-for(i in 1:length(aedes.data$subset.counties)){               # plot minimum temperature
-  plot(clim.dat[[i]]$date, clim.dat[[i]]$tmin..deg.c., 
-       xlab = "Time", 
-       ylab = "Minimum Temperature (Degrees C)", 
-       main = aedes.data$subset.counties[i])
-}
-for(i in 1:length(aedes.data$subset.counties)){               # plot maximum temperature
-  plot(clim.dat[[i]]$date, clim.dat[[i]]$tmax..deg.c., 
-       xlab = "Time", 
-       ylab = "Maximum Temperature (Degrees C)", 
-       main = aedes.data$subset.counties[i])
-}
-
-### plotting precipitation for each county
-for(i in 1:length(aedes.data$subset.counties)){               # plot total precipitation
-  plot(clim.dat[[i]]$date, clim.dat[[i]]$prcp..mm.day., 
-       xlab = "Time", 
-       ylab = "Precipitation (mm/day)", 
-       main = aedes.data$subset.counties[i])
-}
 
 ### calculating relative humidity
 
@@ -93,14 +71,7 @@ for(i in 1:length(aedes.data$subset.counties)){
   clim.dat[[i]] = cbind(clim.dat[[i]], RH)
 }
 
-### plot relative humidity
-for(i in 1:length(aedes.data$subset.counties)){
-  plot(clim.dat[[i]]$date, clim.dat[[i]]$RH,
-       xlab = "Time", 
-       ylab = "Relative Humidity (% Saturation)", 
-       ylim = c(0,100),
-       main = aedes.data$subset.counties[i])
-}
+
 
 ###### MONTHLY DATA ######
 
@@ -158,30 +129,7 @@ for(i in 1:length(aedes.data$subset.counties)){
 ### add name elements in list by county
 names(clim.dat.monthly) <- aedes.data$subset.counties                 
 
-###### MONTHLY PLOTS ######
 
-### plotting minimum and maximum temperatures for each county
-for(i in 1:length(aedes.data$subset.counties)){               # plot minimum temperature
-  plot(clim.dat.monthly[[i]]$date, clim.dat.monthly[[i]]$tmin, 
-       xlab = "Time", 
-       ylab = "Avg Monthly Minimum Temperature (Degrees C)", 
-       main = aedes.data$subset.counties[i])
-}
-
-for(i in 1:length(aedes.data$subset.counties)){               # plot maximum temperature
-  plot(clim.dat.monthly[[i]]$date, clim.dat.monthly[[i]]$tmax, 
-       xlab = "Time", 
-       ylab = "Avg Monthly Maximum Temperature (Degrees C)", 
-       main = aedes.data$subset.counties[i])
-}
-
-### plotting precipitation for each county
-for(i in 1:length(aedes.data$subset.counties)){               # plot total precipitation
-  plot(clim.dat.monthly[[i]]$date, clim.dat.monthly[[i]]$prcp, 
-       xlab = "Time", 
-       ylab = "Avg Monthly Precipitation (mm/day)", 
-       main = aedes.data$subset.counties[i])
-}
 
 ### create a column for monthly relative humidity 
 for(i in 1:length(aedes.data$subset.counties)){
@@ -189,33 +137,3 @@ for(i in 1:length(aedes.data$subset.counties)){
   clim.dat.monthly[[i]] = cbind(clim.dat.monthly[[i]], RH)
 }
 
-### plot relative humidity
-for(i in 1:length(aedes.data$subset.counties)){
-  plot(clim.dat.monthly[[i]]$date, clim.dat.monthly[[i]]$RH,
-       xlab = "Time", 
-       ylab = "Avg Monthly Relative Humidity (% Saturation)", 
-       ylim = c(0,100),
-       main = aedes.data$subset.counties[i])
-}
-
-### plot mosquito data
-for(i in 1:length(aedes.data$data.training$state_county)){
-   data.plot <- subset(aedes.data$data.training, aedes.data$data.training$state_county == aedes.data$subset.counties[i]) %>%
-       unite("year_month", year, month, sep = "_")
-     time <- 1:nrow(data.plot)
-    plot(time[1:length(data.plot$num_aegypti_collected)], data.plot$num_aegypti_collected,
-          type = "l",
-          main = aedes.data$subset.counties[i],
-          ylab = "Number Ae. aegypti collected")
-     plot(time[1:length(data.plot$num_aegypti_collected)], data.plot$num_albopictus_collected,
-          type = "l",
-          main = aedes.data$subset.counties[i],
-          ylab = "Number Ae. albopictus collected")
-     plot(time[1:length(data.plot$num_aegypti_collected)], data.plot$num_collection_events,
-          type = "l",
-          ylab = "Number of collection events")
-     plot(time[1:length(data.plot$num_aegypti_collected)], data.plot$num_trap_nights,
-          type = "l",
-          ylab = "Number of trap nights")
-   }
-  
