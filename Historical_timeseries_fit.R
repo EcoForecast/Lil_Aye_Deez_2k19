@@ -8,14 +8,15 @@
 
 devtools::install_github("EcoForecast/ecoforecastR")
 source("County_subset.R")
-source("1_Climdate_data_import.R")
+source("1_Climate_data_import.R")
 
-
+data.training <- aedes.data$data.training
+county.training <- data.training$state_county
 aegypti.hindcast.out <- vector() #empty vector to store output which will be params, mcmc, predict, model, data
 for(i in 1:length(unique(data.training$state_county))){
    data.plot <- subset(data.training, state_county == county.training[i]) %>%
      unite("year_month", year, month, sep = "_")
-   ecoforecastR::fit_dlm(model=list(obs="data.plot$num_aegypti_collected",fixed="~clim.dat.monthly[i] + clim.dat.monthly[i]$tmin + clim.dat.monthly[i]$tmax + clim.dat.monthly[i]$vp"),clim.dat.monthly)
+   ecoforecastR::fit_dlm(model=list(obs="~data.plot$num_aegypti_collected",fixed="~clim.dat.monthly[i] + clim.dat.monthly[i]$tmin + clim.dat.monthly[i]$tmax + clim.dat.monthly[i]$vp"),clim.dat.monthly)
 }
 
 
