@@ -1,12 +1,14 @@
 
-#' Function for the random walk model. Observations are modelled under a Poisson, while the two species are 
-#' modelled with multivariate normal process error as most counties are correlated
+#' Function for the GLM model. Observations are modelled under a Poisson, while the mozzies are 
+#' modelled with normal process error. Monthly weather drivers can be added as a vector, and any
+#' combination of drivers can be used. Just make sure the names in the met.driver argument match 
+#' colnames from daymet!
 #' 
 #' @param county.name Name of county of interest
 #' @param spp species, one of "albo" or "aegypti"
 #' @param aedes.data mozzie data
 #' @param met.data monthly weather data
-#' @param met.driver vector of met variables to use in model. Any of "prcp", "tmin", "tmax", "RH"
+#' @param met.driver vector of met variables to use in model. Any of "prcp", "sumprcp", "tmin", "tmax", "RH"
 #' @param n.iter number of iterations, default = 5000
 #' @param inits initial conditions, default = NULL
 
@@ -24,7 +26,7 @@ GLM_Fit <- function(county.name, spp, aedes.data, met.data, met.driver, inits = 
   # get met data for county and variables of interest
   met.sub <- met.data[[county.name]][,met.driver] 
 
-  # convert to met.sub to matrix and add column of 1's for intercept
+  # convert met.sub to matrix and add column of 1's for intercept
   MET <- as.matrix(cbind(rep(1, nrow(met.sub)), met.sub))
   
   # use appropriate data (which species?)

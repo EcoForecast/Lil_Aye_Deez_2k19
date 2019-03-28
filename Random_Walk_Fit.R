@@ -8,7 +8,7 @@
 #' @param n.iter number of iterations, default = 5000
 #' @param inits initial conditions, default = NULL
 
-Random_Walk_Fit <- function(county.name, spp, data.set, inits = NULL, n.adapt = 10000){
+Random_Walk_Fit <- function(county.name, spp, data.set, inits = NULL, ...){
 
   # get county of interest and create a "year-month" column
   county.sub <- data.set %>% 
@@ -53,7 +53,7 @@ Random_Walk_Fit <- function(county.name, spp, data.set, inits = NULL, n.adapt = 
                         data = data,
                         n.chains = 3,
                         inits = inits,
-                        n.adapt = n.adapt)
+                        ...)
 
   return(j.model)
 
