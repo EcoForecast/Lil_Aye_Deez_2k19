@@ -1,6 +1,6 @@
 
-#' Function for the random walk model. Observations are modelled under a Poisson, while the two species are 
-#' modelled with multivariate normal process error as most counties are correlated
+#' Function for the random walk model. Observations are modelled under a Poisson, while the the species is 
+#' modelled with normal process error 
 #' 
 #' @param county.name Name of county of interest
 #' @param spp species, one of "albo" or "aegypti"
