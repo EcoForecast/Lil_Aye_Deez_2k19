@@ -24,10 +24,10 @@ GLM_Fit <- function(county.name, spp, aedes.data, met.data, met.driver, inits = 
   y.aegypti <- aggregate(county.sub$num_aegypti_collected, by = list(county.sub$year_month), FUN = sum)[,2]
   
   # get met data for county and variables of interest
-  met.sub <- met.data[[county.name]][,met.driver] 
+  met.sub <- as.matrix(met.data[[county.name]][,met.driver])
 
-  # convert met.sub to matrix and add column of 1's for intercept
-  MET <- as.matrix(cbind(rep(1, nrow(met.sub)), met.sub))
+  # add column of 1's for intercept
+  MET <- cbind(rep(1, nrow(met.sub)), met.sub)
   
   # use appropriate data (which species?)
   if(spp == "albo"){
