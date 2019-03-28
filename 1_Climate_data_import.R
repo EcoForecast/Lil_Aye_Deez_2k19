@@ -20,10 +20,12 @@ county.locations[,3] = c(-118.243, -117.831, -116.419, -117.161, -82.302, -80.63
 ### downloading the data for each county
 clim.dat <- list()                                 # create an empty list to store climate variables
 for(i in 1:length(aedes.data$subset.counties)){               # grab the data 
+  SubCounty <- subset(aedes.data$data.training, state_county == county.locations[i,1])
+  start.year <- min(SubCounty$year) 
   clim.dat[[i]] <- daymetr::download_daymet(site=county.locations[i,1],
                                             lat=county.locations[i,2],
                                             lon=county.locations[i,3],
-                                            start=2013,
+                                            start=start.year,
                                             end=2017,
                                             internal=TRUE)$data
 }
@@ -86,10 +88,15 @@ daily.to.monthly <- function(dat){
   #  Aggregate each variable on months and year and get the monthly means
   dat.monthly <- data.frame()
   dat.prcp <- aggregate(dat$prcp..mm.day. ~ Month + Year , dat , mean)
+  dat.total.prcp <- aggregate(dat$prcp..mm.day. ~ Month + Year , dat , sum)
   dat.tmin <- aggregate(dat$tmin..deg.c. ~ Month + Year , dat ,  mean)
   dat.tmax <- aggregate(dat$tmax..deg.c. ~ Month + Year , dat ,  mean )
   dat.vp <- aggregate(dat$vp..Pa. ~ Month + Year , dat , mean )
-  dat.monthly <- cbind(prcp = dat.prcp[,3],tmin = dat.tmin[,3],tmax = dat.tmax[,3],vp = dat.vp[,3])
+  dat.monthly <- cbind(prcp = dat.prcp[,3],
+                       sum.prcp = dat.total.prcp[,3],
+                       tmin = dat.tmin[,3],
+                       tmax = dat.tmax[,3],
+                       vp = dat.vp[,3])
   return(as.data.frame(dat.monthly))
 }
 
@@ -101,30 +108,30 @@ for(i in 1:length(clim.dat)){
   clim.dat.monthly[[i]] = daily.to.monthly(clim.dat[[i]])
 }
 
-daily.to.monthly.dates <- function(dat){
-  #  Get months from dates 
-  dat$Month <- format(dat$date, format = "%m")
-  
-  #  Get years from dates 
-  dat$Year <- format(dat$date,format="%Y")
-  
-  #  Aggregate each variable on months and year and get the monthly means
-  # I had to redo this because I wanted to ensure the dates lined up correctly...
-  #If i included it in the previous loop, the classes were altered (factor instead of numeric)
-  dat.prcp <- aggregate( dat$prcp..mm.day. ~ Month + Year , data = dat , FUN = mean)
-  dat.date <- paste(dat.prcp$Year, dat.prcp$Month, sep = "-")
-  dat.date <- as.Date(as.yearmon(dat.date))
-  return(dat.date)
-}
-
-### calculate date for one county, since theyre all the same
-dates <- daily.to.monthly.dates(clim.dat$`California_Los Angeles`)
-
-### add dates to list
-for(i in 1:length(aedes.data$subset.counties)){
-  
-  clim.dat.monthly[[i]]$date <- dates
-}
+# daily.to.monthly.dates <- function(dat){
+#   #  Get months from dates 
+#   dat$Month <- format(dat$date, format = "%m")
+#   
+#   #  Get years from dates 
+#   dat$Year <- format(dat$date,format="%Y")
+#   
+#   #  Aggregate each variable on months and year and get the monthly means
+#   # I had to redo this because I wanted to ensure the dates lined up correctly...
+#   #If i included it in the previous loop, the classes were altered (factor instead of numeric)
+#   dat.prcp <- aggregate( dat$prcp..mm.day. ~ Month + Year , data = dat , FUN = mean)
+#   dat.date <- paste(dat.prcp$Year, dat.prcp$Month, sep = "-")
+#   dat.date <- as.Date(as.yearmon(dat.date))
+#   return(dat.date)
+# }
+# 
+# ### calculate date for one county, since theyre all the same
+# dates <- daily.to.monthly.dates(clim.dat$`California_Los Angeles`)
+# 
+# ### add dates to list
+# for(i in 1:length(aedes.data$subset.counties)){
+#   
+#   clim.dat.monthly[[i]]$date <- dates
+# }
 
 ### add name elements in list by county
 names(clim.dat.monthly) <- aedes.data$subset.counties                 

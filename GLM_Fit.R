@@ -1,23 +1,33 @@
 
-#' Function for the random walk model. Observations are modelled under a Poisson, while the the species is 
-#' modelled with normal process error 
+#' Function for the GLM model. Observations are modelled under a Poisson, while the mozzies are 
+#' modelled with normal process error. Monthly weather drivers can be added as a vector, and any
+#' combination of drivers can be used. Just make sure the names in the met.driver argument match 
+#' colnames from daymet!
 #' 
 #' @param county.name Name of county of interest
 #' @param spp species, one of "albo" or "aegypti"
-#' @param data.set data
+#' @param aedes.data mozzie data
+#' @param met.data monthly weather data
+#' @param met.driver vector of met variables to use in model. Any of "prcp", "sumprcp", "tmin", "tmax", "RH"
 #' @param n.iter number of iterations, default = 5000
 #' @param inits initial conditions, default = NULL
 
-Random_Walk_Fit <- function(county.name, spp, data.set, inits = NULL, ...){
-
+GLM_Fit <- function(county.name, spp, aedes.data, met.data, met.driver, inits = NULL, ...){
+  
   # get county of interest and create a "year-month" column
-  county.sub <- data.set %>% 
+  county.sub <- aedes.data %>% 
     filter(state_county == county.name) %>% 
     unite("year_month", year, month, sep = "-")
   
   # aggregate counts for each month, as they are separated by trap type
   y.albo <- aggregate(county.sub$num_albopictus_collected, by = list(county.sub$year_month), FUN = sum)[,2]
   y.aegypti <- aggregate(county.sub$num_aegypti_collected, by = list(county.sub$year_month), FUN = sum)[,2]
+  
+  # get met data for county and variables of interest
+  met.sub <- as.matrix(met.data[[county.name]][,met.driver])
+
+  # add column of 1's for intercept
+  MET <- cbind(rep(1, nrow(met.sub)), met.sub)
   
   # use appropriate data (which species?)
   if(spp == "albo"){
@@ -26,9 +36,18 @@ Random_Walk_Fit <- function(county.name, spp, data.set, inits = NULL, ...){
     y <- y.aegypti
   }
   
+  # beta means - for prior
+  b0 <- rep(0, ncol(MET))
+  
+  # beta precisions - for prior
+  Vb <- solve(diag(10000, ncol(MET)))
+  
   # create data list for JAGS
   data <- list(y = y,
-               n.month = length(y))
+               n.month = length(y),
+               MET = MET,
+               b0 = b0,
+               Vb = Vb)
   
   model <- "
   model{
@@ -40,11 +59,13 @@ Random_Walk_Fit <- function(county.name, spp, data.set, inits = NULL, ...){
     
     #### Process Model
     for(i in 2:n.month){
-      x[i] ~ dnorm(x[i-1], tau_proc)
+      mu[i] <- x[i-1] + MET[i,] %*% beta 
+      x[i] ~ dnorm(mu[i], tau_proc)
     }
     
     #### Priors
     x[1] ~ dpois(5)
+    beta ~ dmnorm(b0, Vb)
     tau_proc ~ dgamma(0.01,0.01)
   
   }"
@@ -54,7 +75,7 @@ Random_Walk_Fit <- function(county.name, spp, data.set, inits = NULL, ...){
                         n.chains = 3,
                         inits = inits,
                         ...)
-
+  
   return(j.model)
-
+  
 }

@@ -1,9 +1,10 @@
 
 
-Run_Forecast <- function(model,variable.names,n.iter){
+Run_Forecast <- function(model,variable.names,n.iter,...){
   jags.out <- coda.samples(model,
                       variable.names = variable.names,
-                      n.iter = n.iter)
+                      n.iter = n.iter,
+                      ...)
   
   ## split output
   out <- list(params = NULL, predict = NULL)
