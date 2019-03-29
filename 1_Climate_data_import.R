@@ -108,34 +108,37 @@ for(i in 1:length(clim.dat)){
   clim.dat.monthly[[i]] = daily.to.monthly(clim.dat[[i]])
 }
 
-# daily.to.monthly.dates <- function(dat){
-#   #  Get months from dates 
-#   dat$Month <- format(dat$date, format = "%m")
-#   
-#   #  Get years from dates 
-#   dat$Year <- format(dat$date,format="%Y")
-#   
-#   #  Aggregate each variable on months and year and get the monthly means
-#   # I had to redo this because I wanted to ensure the dates lined up correctly...
-#   #If i included it in the previous loop, the classes were altered (factor instead of numeric)
-#   dat.prcp <- aggregate( dat$prcp..mm.day. ~ Month + Year , data = dat , FUN = mean)
-#   dat.date <- paste(dat.prcp$Year, dat.prcp$Month, sep = "-")
-#   dat.date <- as.Date(as.yearmon(dat.date))
-#   return(dat.date)
-# }
-# 
-# ### calculate date for one county, since theyre all the same
-# dates <- daily.to.monthly.dates(clim.dat$`California_Los Angeles`)
-# 
-# ### add dates to list
-# for(i in 1:length(aedes.data$subset.counties)){
-#   
-#   clim.dat.monthly[[i]]$date <- dates
-# }
 
+
+
+ daily.to.monthly.dates <- function(dat){
+   #  Get months from dates 
+   dat$Month <- format(dat$date, format = "%m")
+   
+   #  Get years from dates 
+   dat$Year <- format(dat$date,format="%Y")
+   
+   #  Aggregate each variable on months and year and get the monthly means
+   # I had to redo this because I wanted to ensure the dates lined up correctly...
+   #If i included it in the previous loop, the classes were altered (factor instead of numeric)
+   dat.prcp <- aggregate( dat$prcp..mm.day. ~ Month + Year , data = dat , FUN = mean)
+   dat.date <- paste(dat.prcp$Year, dat.prcp$Month, sep = "-")
+   dat.date <- as.Date(as.yearmon(dat.date))
+   dat.date <- format(dat.date, "%Y-%m")
+   return(dat.date)
+ }
+ 
+ ### calculate date for counties
+ ### add dates to list
+ for(i in 1:length(aedes.data$subset.counties)){
+   
+   #clim.dat.monthly[[i]]$date 
+   clim.dat.monthly[[i]]$date <- daily.to.monthly.dates(clim.dat[[i]])
+ }
+
+ 
 ### add name elements in list by county
 names(clim.dat.monthly) <- aedes.data$subset.counties                 
-
 
 
 ### create a column for monthly relative humidity 
