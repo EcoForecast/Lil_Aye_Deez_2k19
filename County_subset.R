@@ -75,7 +75,10 @@ diff.county <- setdiff(county.training, county.validation)
 data.training <- subset(data.training, !(state_county %in% diff.county))
 
 # need to sbset counties again
+
+if (length(diff.county) != 0 ){
 subset.counties <- subset.counties[which(subset.counties != diff.county)]
+}
 
 # unique counties again...
 county.training <- unique(data.training$state_county)

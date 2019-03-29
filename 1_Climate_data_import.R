@@ -14,8 +14,8 @@ aedes.data <- subset_aedes_data()
 ### reference table of county names and locations
 county.locations = matrix(NA, nrow = length(aedes.data$subset.counties), ncol = 3)
 county.locations[,1] = aedes.data$subset.counties
-county.locations[,2] = c(34.052, 33.716, 34.959, 32.716, 27.990, 25.552, 28.102, 28.323, 27.862, 29.972)
-county.locations[,3] = c(-118.243, -117.831, -116.419, -117.161, -82.302, -80.633, -81.076, -82.432, -81.691, -81.428)
+county.locations[,2] = c(34.052, 33.716, 34.959, 32.716, 27.990, 26.663, 25.552, 28.102, 28.323, 27.862, 29.972)
+county.locations[,3] = c(-118.243, -117.831, -116.419, -117.161, -82.302, -81.954, -80.633, -81.076, -82.432, -81.691, -81.428)
 
 ### downloading the data for each county
 clim.dat <- list()                                 # create an empty list to store climate variables
