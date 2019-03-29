@@ -124,7 +124,7 @@ for(i in 1:length(clim.dat)){
    dat.prcp <- aggregate( dat$prcp..mm.day. ~ Month + Year , data = dat , FUN = mean)
    dat.date <- paste(dat.prcp$Year, dat.prcp$Month, sep = "-")
    dat.date <- as.Date(as.yearmon(dat.date))
-   dat.date <- format(dat.date, "%Y-%m")
+   #dat.date <- format(dat.date, "%Y-%m") makes dates, characters
    return(dat.date)
  }
  
