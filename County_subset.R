@@ -14,7 +14,7 @@ csv <-  c("https://predict.cdc.gov/api/v1/attachments/aedes_challenge_2019/aedes
          "https://predict.cdc.gov/api/v1/attachments/aedes_challenge_2019/aedes_collections_new_york.csv", "https://predict.cdc.gov/api/v1/attachments/aedes_challenge_2019/aedes_collections_north_carolina.csv",
          "https://predict.cdc.gov/api/v1/attachments/aedes_challenge_2019/aedes_collections_texas.csv", "https://predict.cdc.gov/api/v1/attachments/aedes_challenge_2019/aedes_collections_wisconsin.csv")
 
-#csv <- list.files(pattern = "aedes_collections_.*\\.csv")
+csv <- list.files(pattern = "aedes_collections_.*\\.csv")
 
 # put all csv files in a list
 data.list <- lapply(csv, read.csv, na.strings = "NA")
