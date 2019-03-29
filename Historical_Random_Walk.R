@@ -5,6 +5,7 @@ library(runjags)
 source("County_subset.R")
 source("Random_Walk_Fit.R")
 source("Run_Forecast.R")
+source("Basic_Diagnostics_Function.R")
 
 aedes.data <- subset_aedes_data()
 data.fit <- aedes.data$data.training
@@ -24,8 +25,10 @@ for(i in 1:length(counties)){
   
   cat("\n\nIterations Complete for", counties[i], "\n", i, "/", length(counties), "counties complete\n\n")
   
+  out.burn = diagnostics(out$params, out$predict, 3000)
+  
   # convert to matrix
-  state <- as.matrix(out$predict)
+  state <- as.matrix(out.burn$predict)
   
   # confidence intervals
   ci.state <- apply(state, 2, quantile, c(0.025,0.5,0.975)) 
@@ -45,7 +48,7 @@ for(i in 1:length(counties)){
   points(time, y.albo, pch = 16)
 }
 
-# loop for aegypti fits
+3# loop for aegypti fits
 for(i in 1:length(counties)){
  
   model <- Random_Walk_Fit(county.name = counties[i],
@@ -59,8 +62,12 @@ for(i in 1:length(counties)){
   
   cat("\n\nIterations Complete for", counties[i], "\n", i, "/", length(counties), "counties complete\n\n")
   
+  # plot model diagnostics, remove burnin
+  
+  out.burn = diagnostics(out$params, out$predict, 3000)
+  
   # convert to matrix
-  state <- as.matrix(out$predict)
+  state <- as.matrix(out.burn$predict)
   
   # confidence intervals
   ci.state <- apply(state, 2, quantile, c(0.025,0.5,0.975)) 
