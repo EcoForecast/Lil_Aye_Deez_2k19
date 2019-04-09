@@ -10,10 +10,19 @@ diagnostics <- function(model_out_params, model_out_pred, n.iter){
   gelman.diag(model_out_params)
   GBR <- gelman.plot(model_out_params)
   
-  burnin <- GBR$last.iter[tail(which(apply(GBR$shrink[,,2] > 1.1, 1, any)),1)+1]
+  # determine burnin for either GLM (first if) or random walk (else)
+  if(dim(model_out_params[[1]])[2] > 1){
+    burnin <- GBR$last.iter[tail(which(apply(GBR$shrink[,,2] > 1.1, 1, any)),1)+1]
+    total.iter <- dim(model_out_params[[1]])[1]
+  } else {
+    burnin <- GBR$last.iter[tail(which(GBR$shrink[,,2] > 1.1),1)+1]
+    total.iter <- length(model_out_params[[1]])
+  }
+  
+  # check for no burnin
   if(length(burnin) == 0){burnin = 1}
   
-  total.iter <- dim(model_out_params[[1]])[1]
+  # number of iterations left after burnin
   burn.iter <- total.iter - burnin
   
   #remove burnin
