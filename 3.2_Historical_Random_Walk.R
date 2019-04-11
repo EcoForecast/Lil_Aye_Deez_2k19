@@ -1,11 +1,10 @@
 
 library(ecoforecastR)
-library(runjags)
 
-source("County_subset.R")
-source("Random_Walk_Fit.R")
-source("Run_Forecast.R")
-source("Basic_Diagnostics_Function.R")
+source("0_County_subset.R")
+source("2.1_Run_Fit.R")
+source("2.2_Basic_Diagnostics_Function.R")
+source("3.1_Random_Walk_Fit.R")
 
 aedes.data <- subset_aedes_data()
 data.fit <- aedes.data$data.training
@@ -19,16 +18,25 @@ for(i in 1:length(counties)){
                            data.set = data.fit,
                            n.adapt = 15000) 
   
-  out <- Run_Forecast(model, 
+  out <- Run_Fit(model, 
                       variable.names = c("tau_proc", "x"),
                       n.iter = 20000)
   
   cat("\n\nIterations Complete for", counties[i], "\n", i, "/", length(counties), "counties complete\n\n")
   
-  out.burn = diagnostics(out$params, out$predict, 3000)
+  # plot model diagnostics, remove burnin
+  
+  out <- diagnostics(out$params, out$predict, 5000)
   
   # convert to matrix
-  state <- as.matrix(out.burn$predict)
+  state <- as.matrix(out$predict)
+  params <- as.matrix(out$params)
+  
+  # remove spaces from counties[i]
+  county.name <- gsub(" ", "", counties[i], fixed = TRUE)
+  file.name <- paste("albopictus_", county.name, "_Precip_Tmax_RH.RData", sep = "")
+  dir <- 'RandomWalk_Out'
+  save(params, predict, file = file.path(dir, file.name))
   
   # confidence intervals
   ci.state <- apply(state, 2, quantile, c(0.025,0.5,0.975)) 
@@ -48,7 +56,7 @@ for(i in 1:length(counties)){
   points(time, y.albo, pch = 16)
 }
 
-3# loop for aegypti fits
+# loop for aegypti fits
 for(i in 1:length(counties)){
  
   model <- Random_Walk_Fit(county.name = counties[i],
@@ -56,7 +64,7 @@ for(i in 1:length(counties)){
                            data.set = data.fit,
                            n.adapt = 15000) 
   
-  out <- Run_Forecast(model, 
+  out <- Run_Fit(model, 
                       variable.names = c("tau_proc", "x"),
                       n.iter = 20000)
   
@@ -64,10 +72,17 @@ for(i in 1:length(counties)){
   
   # plot model diagnostics, remove burnin
   
-  out.burn = diagnostics(out$params, out$predict, 3000)
+  out <- diagnostics(out$params, out$predict, 5000)
   
   # convert to matrix
-  state <- as.matrix(out.burn$predict)
+  state <- as.matrix(out$predict)
+  params <- as.matrix(out$params)
+  
+  # remove spaces from counties[i]
+  county.name <- gsub(" ", "", counties[i], fixed = TRUE)
+  file.name <- paste("aegypti_", county.name, "_Precip_Tmax_RH.RData", sep = "")
+  dir <- 'RandomWalk_Out'
+  save(params, predict, file = file.path(dir, file.name))
   
   # confidence intervals
   ci.state <- apply(state, 2, quantile, c(0.025,0.5,0.975)) 

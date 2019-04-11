@@ -1,6 +1,6 @@
 
 
-Run_Forecast <- function(model,variable.names,n.iter,...){
+Run_Fit <- function(model,variable.names,n.iter,...){
   jags.out <- coda.samples(model,
                       variable.names = variable.names,
                       n.iter = n.iter,
