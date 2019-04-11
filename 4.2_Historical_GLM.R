@@ -1,15 +1,16 @@
 
 library(ecoforecastR)
 
-source("County_subset.R")
-source("1_Climate_data_import.R")
-source("GLM_Fit.R")
-source("Run_Forecast.R")
-source("Basic_Diagnostics_Function.R")
+source("0_County_subset.R")
+source("1.0_Climate_data_import.R")
+source("2.1_Run_Fit.R")
+source("2.2_Basic_Diagnostics_Function.R")
+source("4.1_GLM_Fit.R")
 
 aedes.data <- subset_aedes_data()
 data.fit <- aedes.data$data.training
 counties <- aedes.data$subset.counties
+clim.dat.monthly <- get_daymet()
 
 # loop for albopictus fits
 for(i in 1:length(counties)){
@@ -19,7 +20,7 @@ for(i in 1:length(counties)){
                            met.data = clim.dat.monthly,
                            met.driver = c("prcp", "tmax", "RH")) 
   
-  out <- Run_Forecast(model, 
+  out <- Run_Fit(model, 
                       variable.names = c("tau_proc", "x", "beta"),
                       n.iter = 20000)
 
@@ -67,7 +68,7 @@ for(i in 1:length(counties)){
                            met.data = clim.dat.monthly,
                            met.driver = c("prcp", "tmax", "RH")) 
   
-  out <- Run_Forecast(model, 
+  out <- Run_Fit(model, 
                       variable.names = c("tau_proc", "x", "beta"),
                       n.iter = 20000)
 
