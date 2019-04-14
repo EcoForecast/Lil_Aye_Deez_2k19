@@ -1,3 +1,5 @@
+# This code fits albopictus and aegypti
+# count data to a GLM in JAGS
 
 library(ecoforecastR)
 
@@ -36,9 +38,6 @@ for(i in 1:length(counties)){
   
   # remove spaces from counties[i]
   county.name <- gsub(" ", "", counties[i], fixed = TRUE)
-  file.name <- paste("albopictus_", county.name, "_Precip_Tmax_RH.RData", sep = "")
-  dir <- 'GLM_Out'
-  save(params, predict, file = file.path(dir, file.name))
   
   # confidence intervals
   ci.state <- apply(state, 2, quantile, c(0.025,0.5,0.975)) 
@@ -53,12 +52,16 @@ for(i in 1:length(counties)){
   # aggregate counts for each month, as they are separated by trap type
   y <- aggregate(county.sub$num_albopictus_collected, by = list(county.sub$year_month), FUN = sum)[,2]
   
+  # remove spaces from counties[i] & save 
+  file.name <- paste("albopictus_", county.name, "_Precip_Tmax_RH.RData", sep = "")
+  dir <- 'GLM_Out'
+  save(out, y, file = file.path(dir, file.name)) # save thinned JAGS output and aggregated monthly counts for plotting
+  
   plot(time, ci.state[2,], main = counties[i],pch="")
   ciEnvelope(time, ci.state[1,], ci.state[3,], col = "lightblue")
   points(time, y, pch = 16)
+
 }
-
-
 
 # loop for aegypti fits
 for(i in 1:length(counties)){
@@ -82,17 +85,6 @@ for(i in 1:length(counties)){
   state <- as.matrix(out$predict)
   params <- as.matrix(out$params)
   
-  # remove spaces from counties[i]
-  county.name <- gsub(" ", "", counties[i], fixed = TRUE)
-  file.name <- paste("aegypti_", county.name, "_Precip_Tmax_RH.RData", sep = "")
-  dir <- 'GLM_Out'
-  save(params, predict, file = file.path(dir, file.name))
-  
-  # confidence intervals
-  ci.state <- apply(state, 2, quantile, c(0.025,0.5,0.975)) 
-  
-  time <- 1:ncol(ci.state)
-  
   # get county of interest and create a "year-month" column
   county.sub <- data.fit %>% 
     filter(state_county == counties[i]) %>% 
@@ -100,6 +92,17 @@ for(i in 1:length(counties)){
   
   # aggregate counts for each month, as they are separated by trap type
   y <- aggregate(county.sub$num_aegypti_collected, by = list(county.sub$year_month), FUN = sum)[,2]
+  
+  # remove spaces from counties[i] & save 
+  county.name <- gsub(" ", "", counties[i], fixed = TRUE)
+  file.name <- paste("aegypti_", county.name, "_Precip_Tmax_RH.RData", sep = "")
+  dir <- 'GLM_Out'
+  save(out, y, file = file.path(dir, file.name)) # save thinned JAGS output and aggregated monthly counts for plotting
+  
+  # confidence intervals
+  ci.state <- apply(state, 2, quantile, c(0.025,0.5,0.975)) 
+  
+  time <- 1:ncol(ci.state)
   
   plot(time, ci.state[2,], main = counties[i],pch="")
   ciEnvelope(time, ci.state[1,], ci.state[3,], col = "lightblue")
