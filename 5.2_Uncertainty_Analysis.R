@@ -64,41 +64,59 @@ for(i in 1:length(sp)){
 ##` @param IC    Initial Conditions
 ##` @param mu    counts
 ##` @param beta  beta coefficients on met data
+##` @param ens   ensemble of drivers 
 ##` @param Q     Process error (default = 0 for deterministic runs)
 ##` @param n     Size of Monte Carlo ensemble
-##` @param NT    Length of forecase
+##` @param NT    Length of forecast (months)
 
-forecast <- function(IC,mu,beta,ens,Q=0,n,NT){
+forecast <- function(IC,beta,ens,tau=0,n,NT){ 
   N <- matrix(NA,n,NT) # store results
-  Nprev <- IC # initial conditions 
-  for(i in 1:NT){
-    mu <- x[i-1] + ens[6,i] %*% beta 
-    x <- dnorm(mu[i], tau_proc)
-    N[,t] <- rlnorm(n,mu,Q)
-    Nprev <- N[,t]    
-  }
+  Nprev <- IC # initialize with initial conditions 
+  mu <-  + Nprev + ens[i,] %*% beta # calculate mu using previous step + met data * beta coefficients
+  N[,t] <- rnorm(n,mu,tau) # get new prediction
+  Nprev <- N[,t]    
   return(N)
 }
 
-ens <- create_met_ensemble() # get driver ensemble members
+######################################
 
-# ## calculate mean of all inputs
-# ppt.mean <- matrix(apply(ensemble[6],2,mean),1,NT) ## driver
-# ## parameters
-# params <- as.matrix(out$params)
-# param.mean <- apply(params,2,mean)
-# ## initial conditions
-# IC <- as.matrix(out$predict)
-# 
-# N.det <- forecastN(IC=mean(IC[,"N[6,30]"]),
-#                    r=param.mean["r_global"],
-#                    Kg=param.mean["K_global"],
-#                    alpha=param.mean["alpha_site[6]"],
-#                    beta=param.mean["beta"],
-#                    ppt=ppt.mean,
-#                    Q=0,  ## process error off
-#                    n=1)
-# 
-# ## Plot run
-# plot.run()
-# lines(time2,N.det,col="purple",lwd=3)
+met <- create_met_ensemble() # get driver ensemble members
+
+# calculate mean of all inputs
+#calc.inputs <- function(sp,s,NT){
+### getting a subscript out of bounds error on storing the parameter means
+### also need to figure out a way to only grab certain met variables (ie the ones used in the GLM fit: prcp, tmax, RH)
+sp=aegypti
+s = 6
+NT = 6
+  met.ens <- met[[s]]
+  for(i in 1:length(met.ens)){
+    met.ens[[i]] <- t(met.ens[[i]][seq(1:NT),])
+  }
+  met.means <- matrix(NA,NT,length(met.ens))
+  for(i in 1:length(met.ens)){
+    met.means[,i] <- t(apply(met.ens[[i]],2,mean)) # drivers
+  }
+  params <- as.matrix(sp[[s]]$out$params) 
+  param.mean <- apply(params,2,mean) # betas & tau
+  IC <- as.matrix(sp[[s]]$out$predict) # initial conditions
+
+  inputs <- list(met.means,param.mean,IC)
+  names(inputs) <- c("met.mat","param.mean","IC")
+  return(inputs)
+#}
+
+vars <- calc.inputs(aegypti,6,6)
+
+N.det <- forecast(IC=mean(IC[,ncol(IC)]),
+                   beta=t(vars$param.mean[-6,]),
+                   ens=met.means,
+                   tau=0,  ## process error off
+                   n=1,
+                   NT=6)
+
+# plot
+plot.run()
+time <- ## should be length of time at the certain site we're looking at
+time2 <- time + NT # something like this
+lines(time2,N.det,col="purple",lwd=3)
