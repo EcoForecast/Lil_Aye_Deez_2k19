@@ -36,11 +36,19 @@ for(i in albopictus.files){
 
 ######################################
 
-plot.run <- function(sp,s){ # plot by species & location (numeric indicator from list)
-  state <- as.matrix(sp[[s]]$out$predict)
-  ci.state <- apply(state,2,quantile,c(0.025,0.5,0.975)) 
-  time <- 1:ncol(ci.state)
-  plot(time, ci.state[2,],main=counties[s],ylab="Count", pch="")
+# plot by site with aggregated counts and confidence intervals
+## site (s = 1-11)
+## time length of fit (typically 1-end of fit)
+## x limit (default x = 1-end of fit)
+
+## NOTE the following MUST be included before calling plot.run() (see lines 59-65 and 152-161)
+### sp = aegypti or albopictus
+### state <- as.matrix(sp[[s]]$out$predict)
+### ci.state <- apply(state,2,quantile,c(0.025,0.5,0.975)) 
+### time <- 1:ncol(ci.state)
+
+plot.run <- function(s,time,x=c(1,length(time))){ 
+  plot(time, ci.state[2,],main=counties[s],ylab="Count", pch="",xlim=x)
   ciEnvelope(time,ci.state[1,],ci.state[3,],col="plum2")
   points(time,sp[[s]]$y,pch=16,type="b")
 }
@@ -49,14 +57,20 @@ par(mfrow=c(2,2))
 
 # aegypti plots
 sp <- aegypti
-for(i in 1:length(sp)){
-  plot.run(sp,i)
+for(s in 1:length(sp)){
+  state <- as.matrix(sp[[s]]$out$predict)
+  ci.state <- apply(state,2,quantile,c(0.025,0.5,0.975)) 
+  time <- 1:ncol(ci.state)
+  plot.run(s,time)
 }
 
 # albopictus plots
 sp <- albopictus
-for(i in 1:length(sp)){
-  plot.run(sp,i)
+for(s in 1:length(sp)){
+  state <- as.matrix(sp[[s]]$out$predict)
+  ci.state <- apply(state,2,quantile,c(0.025,0.5,0.975)) 
+  time <- 1:ncol(ci.state)
+  plot.run(s,time)
 }
 
 ######################################
@@ -73,7 +87,7 @@ forecast <- function(IC,beta,ens,tau=0,n,NT){
   N <- matrix(NA,n,NT) # store results
   Nprev <- IC # initialize with initial conditions 
   for(t in 1:NT){
-    mu <- Nprev + ens[i,] %*% beta # calculate mu using previous step + met data * beta coefficients
+    mu <- Nprev + ens[t,] %*% beta # calculate mu using previous step + met data * beta coefficients
     negative.check <- rnorm(n,mu,tau) # get new prediction
     N[,t] <- max(negative.check, 0)
     Nprev <- N[,t]    
@@ -81,17 +95,17 @@ forecast <- function(IC,beta,ens,tau=0,n,NT){
   return(N)
 }
 
-######################################
+###################################### GET MET DATA & DEFINE INPUTS FUNCTION
 
 met <- create_met_ensemble() # get driver ensemble members
 
 # calculate mean of all inputs
-#calc.inputs <- function(sp,s,NT){
-### getting a subscript out of bounds error on storing the parameter means
-### also need to figure out a way to only grab certain met variables (ie the ones used in the GLM fit: prcp, tmax, RH)
-sp=aegypti
-s = 6
-NT = 6 # define months
+
+# get the input data for the forecast function based on 
+## species (sp = aegypti or albopictus)
+## site (s = 1-11)
+## months into the future (NT = 1-12)
+calc.inputs <- function(sp,s,NT){ 
   met.ens <- met[[s]]
   # only work with 1:NT months
   for(i in 1:length(met.ens)){
@@ -117,22 +131,33 @@ NT = 6 # define months
   IC <- as.matrix(sp[[s]]$out$predict) # initial conditions
 
   inputs <- list(met.means,param.mean,IC)
-  names(inputs) <- c("met.mat","param.mean","IC")
+  names(inputs) <- c("met.means","param.mean","IC")
   return(inputs)
-#}
+}
+
+###################################### DETERMINISTIC FORECAST FOR AEGYPTI, FLORIDA LEE, 6 MONTHS
 
 vars <- calc.inputs(aegypti,6,6)
-vars <- inputs
 
-N.det <- forecast(IC=mean(IC[,ncol(IC)]),
-                   beta=vars$param.mean[-5],
-                   ens=met.means,
-                   tau=1/sqrt(vars$param.mean[5]),  ## process error off
-                   n=1,
-                   NT=6)
+N.det <- forecast(IC=mean(vars$IC[,ncol(vars$IC)]), # mean of initial conditions @ last time step of fit
+                   beta=vars$param.mean[-5], # mean of fitted beta values (remove tau from matrix)
+                   ens=vars$met.means, # matrix of mean met data variables from 5.1
+                   tau=1/sqrt(vars$param.mean[5]),  # process error off (note tau must be a SD, not a precision)
+                   n=1, # 1 run to generate deterministic prediction
+                   NT=6) # forecast 6 months into the future
+
+par(mfrow=c(1,1))
+
+# define inputs necessary
+sp <- aegypti # species
+NT <- 6 # number of months
+state <- as.matrix(sp[[6]]$out$predict) # get predictions
+ci.state <- apply(state,2,quantile,c(0.025,0.5,0.975)) # confidence intervals for predictions
+time <- 1:ncol(ci.state) # time length of fit 
+time2 <- seq(ncol(ci.state)+1,ncol(ci.state)+NT) # length of forecast (beginning @ next time step after length of fit ends)
 
 # plot
-plot.run(sp, s)
-time <- ## should be length of time at the certain site we're looking at
-time2 <- time + NT # something like this
-lines(time2,N.det,col="purple",lwd=3)
+plot.run(6,time,x=c(80,ncol(ci.state)+6)) # plot for Florida Lee for length of fit, set xlim to show deterministic forecast
+lines(time2,N.det,col="red",lwd=2,type="b") # plot deterministic forecast
+
+######################################
