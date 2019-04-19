@@ -92,7 +92,7 @@ forecast <- function(IC,beta,ens,tau=0,n,NT){
   for(t in 1:NT){
     mu <- Nprev + as.vector(ens[t,] %*% beta) # calculate mu using previous step + met data * beta coefficients
     negative.check <- rnorm(n,mu,tau) # get new prediction
-    N[,t] <- max(negative.check, 0)
+    N[,t] <- (abs(negative.check) + negative.check) / 2 # check for negative predictions
     Nprev <- N[,t]    
   }
   return(N)
@@ -183,7 +183,7 @@ lines(time2,N.det,col="red",lwd=2,type="l") # plot deterministic forecast
 N.cols<- c("black", "red", "green", "blue", "orange") #woohoo colors
 trans<- 0.8 # setting transparency
 
-vars <- calc.inputs(aegypti,6,6) #same sample site and forecast length as above
+#vars <- calc.inputs(aegypti,6,6) #same sample site and forecast length as above
 
 Nmc <- 500 # number of samples to run
 draw <- sample.int(nrow(vars$parameters), Nmc, replace = TRUE)
