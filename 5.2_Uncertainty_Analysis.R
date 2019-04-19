@@ -90,7 +90,7 @@ forecast <- function(IC,beta,ens,tau=0,n,NT){
   N <- matrix(NA,n,NT) # store results
   Nprev <- IC # initialize with initial conditions 
   for(t in 1:NT){
-    mu <- Nprev + ens[t,] %*% beta # calculate mu using previous step + met data * beta coefficients
+    mu <- Nprev + as.vector(ens[t,] %*% beta) # calculate mu using previous step + met data * beta coefficients
     negative.check <- rnorm(n,mu,tau) # get new prediction
     N[,t] <- max(negative.check, 0)
     Nprev <- N[,t]    
@@ -100,7 +100,7 @@ forecast <- function(IC,beta,ens,tau=0,n,NT){
 
 ###################################### GET MET DATA & DEFINE INPUTS FUNCTION
 
-#met <- create_met_ensemble() # get driver ensemble members
+met <- create_met_ensemble() # get driver ensemble members
 
 # calculate mean of all inputs
 
@@ -185,11 +185,14 @@ trans<- 0.8 # setting transparency
 
 vars <- calc.inputs(aegypti,6,6) #same sample site and forecast length as above
 
-N.I <- forecast(IC=vars$IC[,ncol(vars$IC)], # sample initial conditions @ last time step of fit
+Nmc <- 500 # number of samples to run
+draw <- sample.int(nrow(vars$parameters), Nmc, replace = TRUE)
+
+N.I <- forecast(IC=vars$IC[draw,ncol(vars$IC)], # sample initial conditions @ last time step of fit
                   beta=vars$param.mean[-5], # mean of fitted beta values (remove tau from matrix)
                   ens=vars$met.means, # matrix of mean met data variables from 5.1
                   tau=0,  # process error off (note tau must be a SD, not a precision)
-                  n=1, # 1 run to generate deterministic prediction
+                  n=Nmc, # 1 run to generate deterministic prediction
                   NT=6) # forecast 6 months into the future
 
 N.I.ci = apply(N.I,2,quantile, c(0.025, 0.5, 0.975))
@@ -202,11 +205,11 @@ lines(time2, N.I.ci[2,], lwd=2, type="b")
 
 vars <- calc.inputs(aegypti,6,6) #same sample site and forecast length as above
 
-N.IP <- forecast(IC=vars$IC[,ncol(vars$IC)], # sample initial conditions @ last time step of fit
-                beta=t(as.matrix(vars$parameters[,1:4])), # sample of fitted beta values (remove tau from matrix)
+N.IP <- forecast(IC=vars$IC[draw,ncol(vars$IC)], # sample initial conditions @ last time step of fit
+                beta=vars$param.mean[-5], # mean of fitted beta values (remove tau from matrix)
                 ens=vars$met.means, # matrix of  mean met data variables from 5.1
                 tau=0,  # process error off (note tau must be a SD, not a precision)
-                n=1, # 1 run to generate deterministic prediction
+                n=Nmc, # Nmc runs
                 NT=6) # forecast 6 months into the future
 
 N.IP.ci = apply(N.IP,2,quantile, c(0.025, 0.5, 0.975))
