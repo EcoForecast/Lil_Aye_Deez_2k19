@@ -100,7 +100,7 @@ forecast <- function(IC,beta,ens,tau=0,n,NT){
 
 ###################################### GET MET DATA & DEFINE INPUTS FUNCTION
 
-#met <- create_met_ensemble() # get driver ensemble members
+met <- create_met_ensemble() # get driver ensemble members
 
 # calculate mean of all inputs
 
@@ -185,12 +185,17 @@ trans<- 0.8 # setting transparency
 
 vars <- calc.inputs(aegypti,6,6) #same sample site and forecast length as above
 
-N.I <- forecast(IC=vars$IC[,ncol(vars$IC)], # sample initial conditions @ last time step of fit
+N.I <- matrix(NA, nrow(vars$IC), 6)
+
+for (t in 1:nrow(vars$IC)){
+N.I[t,] <- forecast(IC=vars$IC[t,ncol(vars$IC)], # sample initial conditions @ last time step of fit
                   beta=vars$param.mean[-5], # mean of fitted beta values (remove tau from matrix)
                   ens=vars$met.means, # matrix of mean met data variables from 5.1
                   tau=0,  # process error off (note tau must be a SD, not a precision)
                   n=1, # 1 run to generate deterministic prediction
                   NT=6) # forecast 6 months into the future
+
+}
 
 N.I.ci = apply(N.I,2,quantile, c(0.025, 0.5, 0.975))
 
@@ -198,21 +203,30 @@ plot.run(6,time,x=c(100,ncol(ci.state)+NT)) # plot for Florida Lee for length of
 ecoforecastR::ciEnvelope(time2,N.I.ci[1,], N.I.ci[3,], col="red")
 lines(time2, N.I.ci[2,], lwd=2, type="b")
 
+
 ######### Parameter Uncertainty-- changing beta from mean parametervalues to samples
 
 vars <- calc.inputs(aegypti,6,6) #same sample site and forecast length as above
 
-N.IP <- forecast(IC=vars$IC[,ncol(vars$IC)], # sample initial conditions @ last time step of fit
-                beta=t(as.matrix(vars$parameters[,1:4])), # sample of fitted beta values (remove tau from matrix)
+
+N.IP <- matrix(NA, length(vars$parameters[,1]), 6)
+
+for (t in 1:length(vars$parameters[,1])){
+
+
+N.IP[t,] <- forecast(IC=vars$IC[,ncol(vars$IC)], # sample initial conditions @ last time step of fit
+                beta=vars$parameters[t, 1:4], # sample of fitted beta values (remove tau from matrix)
                 ens=vars$met.means, # matrix of  mean met data variables from 5.1
                 tau=0,  # process error off (note tau must be a SD, not a precision)
                 n=1, # 1 run to generate deterministic prediction
                 NT=6) # forecast 6 months into the future
 
+}
+
 N.IP.ci = apply(N.IP,2,quantile, c(0.025, 0.5, 0.975))
 
 plot.run(6,time,x=c(100,ncol(ci.state)+NT)) # plot for Florida Lee for length of fit
-ecoforecastR::ciEnvelope(time,N.IP.ci[1,], N.IP.ci[3,], col="blue")
+ecoforecastR::ciEnvelope(time2,N.IP.ci[1,], N.IP.ci[3,], col="blue")
 lines(time2, N.IP.ci[2,], lwd=2, type="b")
 
 
