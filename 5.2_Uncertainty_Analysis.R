@@ -100,7 +100,7 @@ forecast <- function(IC,beta,prcp,tmax,rh,tau=0,n,NT){
 
 ###################################### GET MET DATA & DEFINE INPUTS FUNCTION
 
-met <- create_met_ensemble() # get driver ensemble members
+met <- create_met_ensemble(n.ens = 100, amount = 5) # get driver ensemble members
 
 # calculate mean of all inputs
 
@@ -227,12 +227,12 @@ lines(time2, N.IP.ci[2,], lwd=2, type="b")
 draw.met <- sample.int(ncol(vars$met.values$prcp), Nmc, replace = TRUE)
 
 N.IPD <- forecast(IC=vars$IC[draw,ncol(vars$IC)], # sample initial conditions @ last time step of fit
-                 beta=t(as.matrix(vars$parameters[,1:4])), # sample of fitted beta values (remove tau from matrix)
+                 beta=vars$parameters[draw, -5], # sample of fitted beta values (remove tau from matrix)
                  prcp=as.matrix(vars$met.values$prcp[,draw.met]), # matrix of ensemble precip from 5.1
                  tmax=as.matrix(vars$met.values$tmax[,draw.met]), # matrix of mean tmax from 5.1
                  rh=as.matrix(vars$met.values$RH[,draw.met]), # matrix of mean rh from 5.1
                  tau=0,  # process error off (note tau must be a SD, not a precision)
-                 n=Nmc, # 1 run to generate deterministic prediction
+                 n=Nmc, 
                  NT=6) # forecast 6 months into the future
 
 N.IPD.ci = apply(N.IPD,2,quantile, c(0.025, 0.5, 0.975))
@@ -252,7 +252,7 @@ legend('topleft',
 ######### Process uncertainty tau = 1/sqrt(vars$param.mean[5])
 
 N.IPDE <- forecast(IC=vars$IC[draw,ncol(vars$IC)], # sample initial conditions @ last time step of fit
-                   beta=t(as.matrix(vars$parameters[draw,1:4])), # sample of fitted beta values (remove tau from matrix)
+                   beta=vars$parameters[draw, -5], # sample of fitted beta values (remove tau from matrix)
                    prcp=as.matrix(vars$met.values$prcp[,draw.met]), # matrix of ensemble precip from 5.1
                    tmax=as.matrix(vars$met.values$tmax[,draw.met]), # matrix of mean tmax from 5.1
                    rh=as.matrix(vars$met.values$RH[,draw.met]), # matrix of mean rh from 5.1
@@ -262,7 +262,7 @@ N.IPDE <- forecast(IC=vars$IC[draw,ncol(vars$IC)], # sample initial conditions @
 
 N.IPDE.ci = apply(N.IPDE, 2, quantile, c(0.025, 0.5, 0.975))
 
-plot.run(s,time,x=c(x.start,ncol(ci.state)+NT),ylim=c(0,2000))# plot for Florida Lee for length of fit
+plot.run(s,time,x=c(x.start,ncol(ci.state)+NT),ylim=c(0,500))# plot for Florida Lee for length of fit
 ecoforecastR::ciEnvelope(time2,N.IPDE.ci[1,], N.IPDE.ci[3,], col="peachpuff1")
 ecoforecastR::ciEnvelope(time2,N.IPD.ci[1,], N.IPD.ci[3,], col="lightsalmon")
 ecoforecastR::ciEnvelope(time2,N.IP.ci[1,], N.IP.ci[3,], col="indianred2")
@@ -322,7 +322,7 @@ for(S in sites){
                    n=nmc, # Nmc runs
                    NT=Nt) # forecast NT months into the future
   N.IPD <- forecast(IC=var$IC[draw,ncol(var$IC)], # sample initial conditions @ last time step of fit
-                    beta=t(as.matrix(var$parameters[,1:4])), # sample of fitted beta values (remove tau from matrix)
+                    beta=var$parameters[draw, -5], # sample of fitted beta values (remove tau from matrix)
                     prcp=as.matrix(var$met.values$prcp[,draw.met]), # matrix of ensemble precip from 5.1
                     tmax=as.matrix(var$met.values$tmax[,draw.met]), # matrix of mean tmax from 5.1
                     rh=as.matrix(var$met.values$RH[,draw.met]), # matrix of mean rh from 5.1
@@ -330,7 +330,7 @@ for(S in sites){
                     n=nmc, # 1 run to generate deterministic prediction
                     NT=Nt) # forecast 6 months into the future
   N.IPDE <- forecast(IC=var$IC[draw,ncol(var$IC)], # sample initial conditions @ last time step of fit
-                     beta=t(as.matrix(var$parameters[draw,1:4])), # sample of fitted beta values (remove tau from matrix)
+                     beta=var$parameters[draw, -5], # sample of fitted beta values (remove tau from matrix)
                      prcp=as.matrix(var$met.values$prcp[,draw.met]), # matrix of ensemble precip from 5.1
                      tmax=as.matrix(var$met.values$tmax[,draw.met]), # matrix of mean tmax from 5.1
                      rh=as.matrix(var$met.values$RH[,draw.met]), # matrix of mean rh from 5.1
@@ -343,7 +343,7 @@ for(S in sites){
   N.IPD.ci = apply(N.IPD,2,quantile, c(0.025, 0.5, 0.975))
   N.IPDE.ci = apply(N.IPDE, 2, quantile, c(0.025, 0.5, 0.975))
   
-  plot.run(S,time,x=c(x.start,ncol(ci.state)+Nt),ylim=c(0,2000))
+  plot.run(S,time,x=c(x.start,ncol(ci.state)+Nt),ylim=c(0,max(N.IPDE.ci)))
   ecoforecastR::ciEnvelope(time2,N.IPDE.ci[1,], N.IPDE.ci[3,], col="peachpuff1")
   ecoforecastR::ciEnvelope(time2,N.IPD.ci[1,], N.IPD.ci[3,], col="lightsalmon")
   ecoforecastR::ciEnvelope(time2,N.IP.ci[1,], N.IP.ci[3,], col="indianred2")
@@ -400,7 +400,7 @@ for(S in sites){
                    n=nmc, # Nmc runs
                    NT=Nt) # forecast NT months into the future
   N.IPD <- forecast(IC=var$IC[draw,ncol(var$IC)], # sample initial conditions @ last time step of fit
-                    beta=t(as.matrix(var$parameters[,1:4])), # sample of fitted beta values (remove tau from matrix)
+                    beta=var$parameters[draw, -5], # sample of fitted beta values (remove tau from matrix)
                     prcp=as.matrix(var$met.values$prcp[,draw.met]), # matrix of ensemble precip from 5.1
                     tmax=as.matrix(var$met.values$tmax[,draw.met]), # matrix of mean tmax from 5.1
                     rh=as.matrix(var$met.values$RH[,draw.met]), # matrix of mean rh from 5.1
@@ -408,7 +408,7 @@ for(S in sites){
                     n=nmc, # 1 run to generate deterministic prediction
                     NT=Nt) # forecast 6 months into the future
   N.IPDE <- forecast(IC=var$IC[draw,ncol(var$IC)], # sample initial conditions @ last time step of fit
-                     beta=t(as.matrix(var$parameters[draw,1:4])), # sample of fitted beta values (remove tau from matrix)
+                     beta=var$parameters[draw, -5], # sample of fitted beta values (remove tau from matrix)
                      prcp=as.matrix(var$met.values$prcp[,draw.met]), # matrix of ensemble precip from 5.1
                      tmax=as.matrix(var$met.values$tmax[,draw.met]), # matrix of mean tmax from 5.1
                      rh=as.matrix(var$met.values$RH[,draw.met]), # matrix of mean rh from 5.1
@@ -421,7 +421,7 @@ for(S in sites){
   N.IPD.ci = apply(N.IPD,2,quantile, c(0.025, 0.5, 0.975))
   N.IPDE.ci = apply(N.IPDE, 2, quantile, c(0.025, 0.5, 0.975))
   
-  plot.run(S,time,x=c(x.start,ncol(ci.state)+Nt),ylim=c(0,2000))
+  plot.run(S,time,x=c(x.start,ncol(ci.state)+Nt),ylim=c(0,max(N.IPDE.ci)))
   ecoforecastR::ciEnvelope(time2,N.IPDE.ci[1,], N.IPDE.ci[3,], col="honeydew2")
   ecoforecastR::ciEnvelope(time2,N.IPD.ci[1,], N.IPD.ci[3,], col="honeydew3")
   ecoforecastR::ciEnvelope(time2,N.IP.ci[1,], N.IP.ci[3,], col="honeydew4")

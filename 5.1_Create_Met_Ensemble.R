@@ -10,7 +10,7 @@ create_met_ensemble <- function(n.ens = 10, amount = 3){
     county <- select(county, -date) # get rid of date column 
     
     # storage
-    prcp <- sum.prcp <- tmin <- tmax <- vp <- RH <- matrix(NA, 12, 10)
+    prcp <- sum.prcp <- tmin <- tmax <- vp <- RH <- matrix(NA, 12, n.ens)
     
     # run ensemble
     for(e in 1:n.ens){
