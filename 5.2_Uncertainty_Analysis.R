@@ -100,7 +100,7 @@ forecast <- function(IC,beta,prcp,tmax,rh,tau=0,n,NT){
 
 ###################################### GET MET DATA & DEFINE INPUTS FUNCTION
 
-met <- create_met_ensemble(n.ens = 100, amount = 5) # get driver ensemble members
+met <- create_met_ensemble(n.ens = 100) # get driver ensemble members
 
 # calculate mean of all inputs
 
