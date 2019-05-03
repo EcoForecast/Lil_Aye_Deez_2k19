@@ -100,7 +100,7 @@ forecast <- function(IC,beta,prcp,tmax,rh,tau=0,n,NT){
 
 ###################################### GET MET DATA & DEFINE INPUTS FUNCTION
 
-met <- create_met_ensemble(n.ens = 100, amount = 5) # get driver ensemble members
+met <- create_met_ensemble(n.ens = 100) # get driver ensemble members
 
 # calculate mean of all inputs
 
@@ -154,7 +154,7 @@ calc.inputs <- function(sp,s,NT){
 
 ##### DETERMINISTIC FORECAST FOR AEGYPTI, FLORIDA Osceola, 6 MONTHS #####
 s <- 8
-NT <- 6
+NT <- 12
 vars <- calc.inputs(aegypti,s,NT)
 
 N.det <- forecast(IC=mean(vars$IC[,ncol(vars$IC)]), # mean of initial conditions @ last time step of fit
@@ -233,7 +233,7 @@ N.IPD <- forecast(IC=vars$IC[draw,ncol(vars$IC)], # sample initial conditions @ 
                  rh=as.matrix(vars$met.values$RH[,draw.met]), # matrix of mean rh from 5.1
                  tau=0,  # process error off (note tau must be a SD, not a precision)
                  n=Nmc, 
-                 NT=6) # forecast 6 months into the future
+                 NT=NT) # forecast 6 months into the future
 
 N.IPD.ci = apply(N.IPD,2,quantile, c(0.025, 0.5, 0.975))
 
@@ -258,7 +258,7 @@ N.IPDE <- forecast(IC=vars$IC[draw,ncol(vars$IC)], # sample initial conditions @
                    rh=as.matrix(vars$met.values$RH[,draw.met]), # matrix of mean rh from 5.1
                    tau=1/sqrt(vars$parameters[draw,5]),  # process error off (note tau must be a SD, not a precision)
                    n=Nmc,
-                   NT=6) # forecast 6 months into the future
+                   NT=NT) # forecast 6 months into the future
 
 N.IPDE.ci = apply(N.IPDE, 2, quantile, c(0.025, 0.5, 0.975))
 
@@ -282,7 +282,8 @@ par(mfrow=c(2,2))
 sp <- aegypti
 nmc = 500
 sites = 1:11
-Nt = 6
+Nt = 12
+aegypti.forecast.mean <- aegypti.forecast.var <- list()
 for(S in sites){
   
   var <- calc.inputs(sp, S, Nt)
@@ -342,6 +343,8 @@ for(S in sites){
   N.IP.ci = apply(N.IP,2,quantile, c(0.025, 0.5, 0.975))
   N.IPD.ci = apply(N.IPD,2,quantile, c(0.025, 0.5, 0.975))
   N.IPDE.ci = apply(N.IPDE, 2, quantile, c(0.025, 0.5, 0.975))
+  aegypti.forecast.mean[[S]] <- apply(N.IPDE, 2, mean)
+  aegypti.forecast.var[[S]] <- apply(N.IPDE, 2, var)
   
   plot.run(S,time,x=c(x.start,ncol(ci.state)+Nt),ylim=c(0,max(N.IPDE.ci)))
   ecoforecastR::ciEnvelope(time2,N.IPDE.ci[1,], N.IPDE.ci[3,], col="peachpuff1")
@@ -353,14 +356,14 @@ for(S in sites){
          legend = c('Forecast','Inital Conditions','Parameter','Driver','Process'),
          col = c('black', 'violetred4', 'indianred2','lightsalmon','peachpuff1'),
          lwd = c(2,4,4,4,4),
-         cex = 0.75,
-         inset = 0.02)
+         cex = 0.75)
 }
 
 sp <- albopictus
 nmc = 500
 sites = 1:11
-Nt = 6
+Nt = 12
+albopictus.forecast.mean <- albopictus.forecast.var <- list()
 for(S in sites){
   
   var <- calc.inputs(sp, S, Nt)
@@ -420,6 +423,8 @@ for(S in sites){
   N.IP.ci = apply(N.IP,2,quantile, c(0.025, 0.5, 0.975))
   N.IPD.ci = apply(N.IPD,2,quantile, c(0.025, 0.5, 0.975))
   N.IPDE.ci = apply(N.IPDE, 2, quantile, c(0.025, 0.5, 0.975))
+  albopictus.forecast.mean[[S]] <- apply(N.IPDE, 2, mean)
+  albopictus.forecast.var[[S]] <- apply(N.IPDE, 2, var)
   
   plot.run(S,time,x=c(x.start,ncol(ci.state)+Nt),ylim=c(0,max(N.IPDE.ci)))
   ecoforecastR::ciEnvelope(time2,N.IPDE.ci[1,], N.IPDE.ci[3,], col="honeydew2")
@@ -431,6 +436,16 @@ for(S in sites){
          legend = c('Forecast','Inital Conditions','Parameter','Driver','Process'),
          col = c('black', 'gray30', 'honeydew4','honeydew3','honeydew2'),
          lwd = c(2,4,4,4,4),
-         cex = 0.75,
-         inset = 0.02)
+         cex = 0.75)
 }
+
+names(aegypti.forecast.mean) <- counties
+names(aegypti.forecast.var) <- counties
+names(albopictus.forecast.mean) <- counties
+names(albopictus.forecast.var) <- counties
+
+save(aegypti.forecast.mean,
+     aegypti.forecast.var,
+     albopictus.forecast.mean,
+     albopictus.forecast.var,
+     file = "forecast.mean.var.RData")

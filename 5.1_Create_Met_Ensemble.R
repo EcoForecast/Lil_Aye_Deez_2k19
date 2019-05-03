@@ -1,6 +1,6 @@
 source("1.0_Climate_data_import.R")
 
-create_met_ensemble <- function(n.ens = 10, amount = 3){
+create_met_ensemble <- function(n.ens = 10){
   clim.dat.2018 <- get_daymet(2018, 2018)
   ens.2018 <- list()
   for(i in 1:length(clim.dat.2018)){
@@ -14,12 +14,12 @@ create_met_ensemble <- function(n.ens = 10, amount = 3){
     
     # run ensemble
     for(e in 1:n.ens){
-      prcp[,e] <- jitter(county[,"prcp"], amount = amount)
-      sum.prcp[,e] <- jitter(county[,"sum.prcp"], amount = amount)
-      tmin[,e] <- jitter(county[,"tmin"], amount = amount)
-      tmax[,e] <- jitter(county[,"tmax"], amount = amount)
-      vp[,e] <- jitter(county[,"vp"], amount = amount)
-      RH[,e] <- jitter(county[,"RH"], amount = amount)
+      prcp[,e] <- jitter(county[,"prcp"], amount = sd(county[,"prcp"]))
+      sum.prcp[,e] <- jitter(county[,"sum.prcp"], amount = sd(county[,"sum.prcp"]))
+      tmin[,e] <- jitter(county[,"tmin"], amount = sd(county[,"tmin"]))
+      tmax[,e] <- jitter(county[,"tmax"], amount = sd(county[,"tmax"]))
+      vp[,e] <- jitter(county[,"vp"], amount = sd(county[,"vp"]))
+      RH[,e] <- jitter(county[,"RH"], amount = sd(county[,"RH"]))
       
       # cant have negative precipitation or RH - set to 0 if negative
       prcp <- (abs(prcp) + prcp) / 2
