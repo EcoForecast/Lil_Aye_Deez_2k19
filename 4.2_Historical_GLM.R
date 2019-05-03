@@ -49,17 +49,27 @@ for(i in 1:length(counties)){
     filter(state_county == counties[i]) %>% 
     unite("year_month", year, month, sep = "-") 
   
+  
   # aggregate counts for each month, as they are separated by trap type
   y <- aggregate(county.sub$num_albopictus_collected, by = list(county.sub$year_month), FUN = sum)[,2]
+  
+  # vector of all dates in each time series 
+  year.month = unique(county.sub$year_month)
+  N.months = length(year.month)
+
   
   # remove spaces from counties[i] & save 
   file.name <- paste("albopictus_", county.name, "_Precip_Tmax_RH.RData", sep = "")
   dir <- 'GLM_Out'
   save(out, y, file = file.path(dir, file.name)) # save thinned JAGS output and aggregated monthly counts for plotting
   
-  plot(time, ci.state[2,], main = counties[i],pch="")
+  # indexing vector, only puts 7 dates on the axis
+  at <- seq(1, N.months, length.out = 7)
+  
+  plot(time, ci.state[2,], main = counties[i],pch="", xaxt = "n", xlab = "Year - Month", ylab = "Individual Ades albopictus")
   ciEnvelope(time, ci.state[1,], ci.state[3,], col = "lightblue")
   points(time, y, pch = 16)
+  axis(1, at = at, labels = year.month[at])
 
 }
 
@@ -93,6 +103,10 @@ for(i in 1:length(counties)){
   # aggregate counts for each month, as they are separated by trap type
   y <- aggregate(county.sub$num_aegypti_collected, by = list(county.sub$year_month), FUN = sum)[,2]
   
+  # vector of all dates in each time series 
+  year.month = unique(county.sub$year_month)
+  N.months = length(year.month)
+  
   # remove spaces from counties[i] & save 
   county.name <- gsub(" ", "", counties[i], fixed = TRUE)
   file.name <- paste("aegypti_", county.name, "_Precip_Tmax_RH.RData", sep = "")
@@ -104,7 +118,11 @@ for(i in 1:length(counties)){
   
   time <- 1:ncol(ci.state)
   
-  plot(time, ci.state[2,], main = counties[i],pch="")
+  # indexing vector, only puts 7 dates on the axis
+  at <- seq(1, N.months, length.out = 7)
+  
+  plot(time, ci.state[2,], main = counties[i], xaxt ="n", pch="", xlab = "Year - Months", ylab = "Individual Ades aegypti")
   ciEnvelope(time, ci.state[1,], ci.state[3,], col = "lightblue")
   points(time, y, pch = 16)
+  axis(1, at = at, labels = year.month[at])
 }

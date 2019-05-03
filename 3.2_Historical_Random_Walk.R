@@ -51,9 +51,18 @@ for(i in 1:length(counties)){
   # aggregate counts for each month, as they are separated by trap type
   y.albo <- aggregate(county.sub$num_albopictus_collected, by = list(county.sub$year_month), FUN = sum)[,2]
   
-  plot(time, ci.state[2,], main = counties[i],pch="")
+  
+  # vector of all dates in each time series 
+  year.month = unique(county.sub$year_month)
+  N.months = length(year.month)
+  
+  # indexing vector, only puts 7 dates on the axis
+  at <- seq(1, N.months, length.out = 7)
+  
+  plot(time, ci.state[2,], main = counties[i],pch="", xaxt= "n", xlab = "Year - Month", ylab = "Individual Ades albopictus")
   ciEnvelope(time, ci.state[1,], ci.state[3,], col = "lightblue")
   points(time, y.albo, pch = 16)
+  axis(1, at = at, labels = year.month[at]) 
 }
 
 # loop for aegypti fits
@@ -97,8 +106,16 @@ for(i in 1:length(counties)){
   # aggregate counts for each month, as they are separated by trap type
   y.aegypti <- aggregate(county.sub$num_aegypti_collected, by = list(county.sub$year_month), FUN = sum)[,2]
   
-  plot(time, ci.state[2,], main = counties[i],pch="")
+  # vector of all dates in each time series 
+  year.month = unique(county.sub$year_month)
+  N.months = length(year.month)
+  
+  # indexing vector, only puts 7 dates on the axis
+  at <- seq(1, N.months, length.out = 7)
+  
+  plot(time, ci.state[2,], main = counties[i],pch="", xaxt = "n", xlab = "Year - Months", ylab = "Individual Ades aegypti")
   ciEnvelope(time, ci.state[1,], ci.state[3,], col = "lightblue")
   points(time, y.aegypti, pch = 16)
+  axis(1, at = at, labels = year.month[at])
 }
 
