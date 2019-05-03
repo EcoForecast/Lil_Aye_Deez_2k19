@@ -14,6 +14,16 @@ data.fit <- aedes.data$data.training
 counties <- aedes.data$subset.counties
 clim.dat.monthly <- get_daymet()
 
+##store calculated parameters
+albo.param.GLM <- list()
+aegypti.param.GLM <- list()
+
+##store aggregated counts
+albo.y <- list()
+aegypti.y <- list()
+
+
+
 # loop for albopictus fits
 for(i in 1:length(counties)){
   model <- GLM_Fit(county.name = counties[i],
@@ -35,7 +45,7 @@ for(i in 1:length(counties)){
   # convert to matrix
   state <- as.matrix(out$predict)
   params <- as.matrix(out$params)
-  
+  albo.param.GLM[[i]] <- params
   # remove spaces from counties[i]
   county.name <- gsub(" ", "", counties[i], fixed = TRUE)
   
@@ -52,7 +62,7 @@ for(i in 1:length(counties)){
   
   # aggregate counts for each month, as they are separated by trap type
   y <- aggregate(county.sub$num_albopictus_collected, by = list(county.sub$year_month), FUN = sum)[,2]
-  
+  albo.y[[i]] <- y
   # vector of all dates in each time series 
   year.month = unique(county.sub$year_month)
   N.months = length(year.month)
@@ -94,6 +104,7 @@ for(i in 1:length(counties)){
   # convert to matrix
   state <- as.matrix(out$predict)
   params <- as.matrix(out$params)
+  aegypti.param.GLM[[i]] <- params
   
   # get county of interest and create a "year-month" column
   county.sub <- data.fit %>% 
@@ -102,6 +113,7 @@ for(i in 1:length(counties)){
   
   # aggregate counts for each month, as they are separated by trap type
   y <- aggregate(county.sub$num_aegypti_collected, by = list(county.sub$year_month), FUN = sum)[,2]
+  aegypti.y[[i]] <- y
   
   # vector of all dates in each time series 
   year.month = unique(county.sub$year_month)
