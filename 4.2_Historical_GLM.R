@@ -56,12 +56,26 @@ for(i in 1:length(counties)){
   
   # get county of interest and create a "year-month" column
   county.sub <- data.fit %>% 
-    filter(state_county == counties[i]) %>% 
-    unite("year_month", year, month, sep = "-") 
+    filter(state_county == counties[i]) 
+  for(i in 1:nrow(county.sub)){
+    if(county.sub$month[i]==10){
+      county.sub$new.month[i] <- 91 
+    } else if(county.sub$month[i]==11){
+      county.sub$new.month[i] <- 92 
+    } else if(county.sub$month[i]==12){
+      county.sub$new.month[i] <- 93 
+    } else {
+      county.sub$new.month[i] <- county.sub$month[i] 
+    }
+  }
+
+  county.sub <- county.sub %>% 
+    unite("year_month", year, month, sep = "-", remove = FALSE) %>% 
+    unite("year_month_seq", year, new.month, sep = "-")
   
   
   # aggregate counts for each month, as they are separated by trap type
-  y <- aggregate(county.sub$num_albopictus_collected, by = list(county.sub$year_month), FUN = sum)[,2]
+  y <- aggregate(county.sub$num_albopictus_collected, by = list(county.sub$year_month_seq), FUN = sum)[,2]
   albo.y[[i]] <- y
   # vector of all dates in each time series 
   year.month = unique(county.sub$year_month)
@@ -105,14 +119,30 @@ for(i in 1:length(counties)){
   state <- as.matrix(out$predict)
   params <- as.matrix(out$params)
   aegypti.param.GLM[[i]] <- params
+  # remove spaces from counties[i]
+  county.name <- gsub(" ", "", counties[i], fixed = TRUE)
   
   # get county of interest and create a "year-month" column
   county.sub <- data.fit %>% 
-    filter(state_county == counties[i]) %>% 
-    unite("year_month", year, month, sep = "-") 
+    filter(state_county == counties[i]) 
+  for(i in 1:nrow(county.sub)){
+    if(county.sub$month[i]==10){
+      county.sub$new.month[i] <- 91 
+    } else if(county.sub$month[i]==11){
+      county.sub$new.month[i] <- 92 
+    } else if(county.sub$month[i]==12){
+      county.sub$new.month[i] <- 93 
+    } else {
+      county.sub$new.month[i] <- county.sub$month[i] 
+    }
+  }
+  
+  county.sub <- county.sub %>% 
+    unite("year_month", year, month, sep = "-", remove = FALSE) %>% 
+    unite("year_month_seq", year, new.month, sep = "-")
   
   # aggregate counts for each month, as they are separated by trap type
-  y <- aggregate(county.sub$num_aegypti_collected, by = list(county.sub$year_month), FUN = sum)[,2]
+  y <- aggregate(county.sub$num_aegypti_collected, by = list(county.sub$year_month_seq), FUN = sum)[,2]
   aegypti.y[[i]] <- y
   
   # vector of all dates in each time series 
@@ -120,7 +150,7 @@ for(i in 1:length(counties)){
   N.months = length(year.month)
   
   # remove spaces from counties[i] & save 
-  county.name <- gsub(" ", "", counties[i], fixed = TRUE)
+  #county.name <- gsub(" ", "", counties[i], fixed = TRUE)
   file.name <- paste("aegypti_", county.name, "_Precip_Tmax_RH.RData", sep = "")
   dir <- 'GLM_Out'
   save(out, y, file = file.path(dir, file.name)) # save thinned JAGS output and aggregated monthly counts for plotting
