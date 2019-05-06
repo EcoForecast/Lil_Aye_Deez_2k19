@@ -51,9 +51,10 @@ time <- 1:ncol(ci.state)
 summary(sp)
 
 plot.run <- function(s,time,x=c(1,length(time)), ...){ 
-  plot(time, ci.state[2,],main=gsub('_', ' ',counties[s]),ylab="Count", pch="",xlim=x,...)
-  ciEnvelope(time,ci.state[1,],ci.state[3,],col="lightsteelblue1")
-  points(time,sp[[s]]$y,pch=16,type="b",col='navy')
+  plot(time, ci.state[2,],main=gsub('_', ' ',counties[s]), xlab = "Year - Month", xaxt = 'n', pch="",xlim=x,...)
+  ciEnvelope(time,ci.state[1,],ci.state[3,],col="lightblue")
+  points(time,sp[[s]]$y,pch=16,type="p",col='black')
+  axis(1, at = at, labels = year.month[at])
 }
 
 par(mfrow=c(2,2))
@@ -281,7 +282,7 @@ par(mfrow=c(2,2))
 
 sp <- aegypti
 nmc = 500
-sites = 1:11
+sites = c(2,5) ##CHANGED THIS TO ONLY RUN CA ORANGE AND FL HILLSBORO, CHANGE BACK TO 1:11 FOR ALL
 Nt = 12
 aegypti.forecast.mean <- aegypti.forecast.var <- list()
 for(S in sites){
@@ -346,7 +347,7 @@ for(S in sites){
   aegypti.forecast.mean[[S]] <- apply(N.IPDE, 2, mean)
   aegypti.forecast.var[[S]] <- apply(N.IPDE, 2, var)
   
-  plot.run(S,time,x=c(x.start,ncol(ci.state)+Nt),ylim=c(0,max(N.IPDE.ci)))
+  plot.run(S,time,x=c(x.start,ncol(ci.state)+Nt),ylim=c(0,max(N.IPDE.ci)), ylab = "Individual Aedes aegypti")
   ecoforecastR::ciEnvelope(time2,N.IPDE.ci[1,], N.IPDE.ci[3,], col="peachpuff1")
   ecoforecastR::ciEnvelope(time2,N.IPD.ci[1,], N.IPD.ci[3,], col="lightsalmon")
   ecoforecastR::ciEnvelope(time2,N.IP.ci[1,], N.IP.ci[3,], col="indianred2")
@@ -361,7 +362,7 @@ for(S in sites){
 
 sp <- albopictus
 nmc = 500
-sites = 1:11
+sites = c(2,5) ##CHANGED THIS TO ONLY RUN CA ORANGE AND FL HILLSBORO, CHANGE BACK TO 1:11 FOR ALL
 Nt = 12
 albopictus.forecast.mean <- albopictus.forecast.var <- list()
 for(S in sites){
@@ -426,7 +427,7 @@ for(S in sites){
   albopictus.forecast.mean[[S]] <- apply(N.IPDE, 2, mean)
   albopictus.forecast.var[[S]] <- apply(N.IPDE, 2, var)
   
-  plot.run(S,time,x=c(x.start,ncol(ci.state)+Nt),ylim=c(0,max(N.IPDE.ci)))
+  plot.run(S,time,x=c(x.start,ncol(ci.state)+Nt),ylim=c(0,max(N.IPDE.ci)), ylab = "Individual Aedes albopictus")
   ecoforecastR::ciEnvelope(time2,N.IPDE.ci[1,], N.IPDE.ci[3,], col="honeydew2")
   ecoforecastR::ciEnvelope(time2,N.IPD.ci[1,], N.IPD.ci[3,], col="honeydew3")
   ecoforecastR::ciEnvelope(time2,N.IP.ci[1,], N.IP.ci[3,], col="honeydew4")

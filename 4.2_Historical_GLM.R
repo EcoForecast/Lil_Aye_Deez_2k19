@@ -77,6 +77,7 @@ for(i in 1:length(counties)){
   # aggregate counts for each month, as they are separated by trap type
   y <- aggregate(county.sub$num_albopictus_collected, by = list(county.sub$year_month_seq), FUN = sum)[,2]
   albo.y[[i]] <- y
+  
   # vector of all dates in each time series 
   year.month = unique(county.sub$year_month)
   N.months = length(year.month)
