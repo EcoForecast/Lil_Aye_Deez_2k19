@@ -46,9 +46,11 @@ for(i in 2:length(albo.y[[c]])) {
   
 }
 
+name = paste("Aedes albopictus", str_replace(counties[c], "_", " "), sep = "\n")
+
 ##plot observed vs. expected and 1:1 line
-plot(mu,albo.y[[c]], xlab = "Predicted Valute", ylab = "Observed Values", main = counties[c], pch = 16)
-abline(0,1, col = "darkred")
+plot(albo.y[[c]],mu, xlab = "Observed Values", ylab = "Predicted Values", main = name, pch = 16)
+abline(0,1, col = "darkred", lwd = 2)
 
 ##print statistics
 print(counties[c])
@@ -89,9 +91,11 @@ for(c in 1:length(counties)) {
     
   }
   
+  name = paste("Aedes aegypti", str_replace(counties[c], "_", " "), sep = "\n")
+  
   ##plot observed vs. expected and 1:1 line
-  plot(mu,aegypti.y[[c]], xlab = "Predicted Valute", ylab = "Observed Values", main = counties[c], pch = 16)
-  abline(0,1, col = "darkred")
+  plot(aegypti.y[[c]],mu, xlab = "Observed Values", ylab = "Predicted Values", main = name, pch = 16)
+  abline(0,1, col = "darkred", lwd = 2)
   
   ##print statistics
   print(counties[c])

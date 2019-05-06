@@ -57,15 +57,15 @@ for(i in 1:length(counties)){
   # get county of interest and create a "year-month" column
   county.sub <- data.fit %>% 
     filter(state_county == counties[i]) 
-  for(i in 1:nrow(county.sub)){
-    if(county.sub$month[i]==10){
-      county.sub$new.month[i] <- 91 
-    } else if(county.sub$month[i]==11){
-      county.sub$new.month[i] <- 92 
-    } else if(county.sub$month[i]==12){
-      county.sub$new.month[i] <- 93 
+  for(c in 1:nrow(county.sub)){
+    if(county.sub$month[c]==10){
+      county.sub$new.month[c] <- 91 
+    } else if(county.sub$month[c]==11){
+      county.sub$new.month[c] <- 92 
+    } else if(county.sub$month[c]==12){
+      county.sub$new.month[c] <- 93 
     } else {
-      county.sub$new.month[i] <- county.sub$month[i] 
+      county.sub$new.month[c] <- county.sub$month[c] 
     }
   }
 
@@ -126,15 +126,15 @@ for(i in 1:length(counties)){
   # get county of interest and create a "year-month" column
   county.sub <- data.fit %>% 
     filter(state_county == counties[i]) 
-  for(i in 1:nrow(county.sub)){
-    if(county.sub$month[i]==10){
-      county.sub$new.month[i] <- 91 
-    } else if(county.sub$month[i]==11){
-      county.sub$new.month[i] <- 92 
-    } else if(county.sub$month[i]==12){
-      county.sub$new.month[i] <- 93 
+  for(c in 1:nrow(county.sub)){
+    if(county.sub$month[c]==10){
+      county.sub$new.month[c] <- 91 
+    } else if(county.sub$month[c]==11){
+      county.sub$new.month[c] <- 92 
+    } else if(county.sub$month[c]==12){
+      county.sub$new.month[c] <- 93 
     } else {
-      county.sub$new.month[i] <- county.sub$month[i] 
+      county.sub$new.month[c] <- county.sub$month[c] 
     }
   }
   
