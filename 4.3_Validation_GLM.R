@@ -22,14 +22,14 @@ clim.dat.monthly <- get_daymet()
 aegypti <- list()
 aegypti.files <- list.files(path = path, pattern="^aegypti") # load in files with "aegypti" at the beginning
 for(i in aegypti.files){
-  aegypti[[i]] <- mget(load(file.path("GLM_Out", i))) # get objects in each RData file, store
+  aegypti[[i]] <- mget(load(file.path(path, i))) # get objects in each RData file, store
 }
 
 # load in albopictus model fits for each county & counts, store in list
 albopictus <- list()
 albopictus.files <- list.files(path = path, pattern="^albopictus") # load in files with "aegypti" at the beginning
 for(i in albopictus.files){
-  albopictus[[i]] <- mget(load(file.path("GLM_Out", i))) # get objects in each RData file, store
+  albopictus[[i]] <- mget(load(file.path(path, i))) # get objects in each RData file, store
 }
 
 # root mean squared error
@@ -111,7 +111,7 @@ for(c in 1:length(counties)){
   
   ##plot observed vs. expected and 1:1 line
   plot(mu,aegypti[[c]]$y, xlab = "Predicted Values", ylab = "Observed Values", main=gsub('_', ' ',counties[c]))
-  abline(0,1, col = "darkorange1", lwd=2)
+  abline(0,1, col = "lightslateblue", lwd=2)
   
   ##print statistics
   print(counties[c])
