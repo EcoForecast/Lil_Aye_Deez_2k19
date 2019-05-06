@@ -7,9 +7,9 @@ source("3.2_Historical_Random_Walk.R")
 par(mfrow=c(2,2))
 
 
-#Califormia Orange, aegypti plot
-i = 2
-#aegypti.names <- as.data.frame(c("Ades aegypti", "\n", "California: Orange County"", ""Ades aegypti", "\n", "Florida: Hillsborough"))
+#Califormia San Diego, aegypti plot
+i = 4
+
 
   model <- Random_Walk_Fit(county.name = counties[i],
                            spp = "aegypti",
@@ -70,16 +70,16 @@ i = 2
   # indexing vector, only puts 7 dates on the axis
   at <- seq(1, N.months, length.out = 7)
   
-  plot(time, ci.state[2,], main = paste("Aedes aegypti", "\n", "California: Orange County"), pch="", xaxt = "n", xlab = "Year - Month", ylab = "Individual Ades aegypti")
+  plot(time, ci.state[2,], main = paste("Aedes aegypti", "\n", "California: San Diego County"), pch="", xaxt = "n", xlab = "Year - Month", ylab = "Individual Ades aegypti")
   ciEnvelope(time, ci.state[1,], ci.state[3,], col = "lightblue")
   points(time, y.aegypti, pch = 16)
   axis(1, at = at, labels = year.month[at])
 
 
 
-#Florida Hillsborough, aegypti plot
-i = 5
-#aegypti.names <- as.data.frame(c("Ades aegypti", "\n", "California: Orange County"", ""Ades aegypti", "\n", "Florida: Hillsborough"))
+#Florida Polk, aegypti plot
+i = 10
+
 
 model <- Random_Walk_Fit(county.name = counties[i],
                          spp = "aegypti",
@@ -140,7 +140,7 @@ N.months = length(year.month)
 # indexing vector, only puts 7 dates on the axis
 at <- seq(1, N.months, length.out = 7)
 
-plot(time, ci.state[2,], main = paste("Aedes aegypti", "\n", "Florida: Hillsborough County"), pch="", xaxt = "n", xlab = "Year - Month", ylab = "Individual Ades aegypti")
+plot(time, ci.state[2,], main = paste("Aedes aegypti", "\n", "Florida: Polk County"), pch="", xaxt = "n", xlab = "Year - Month", ylab = "Individual Ades aegypti")
 ciEnvelope(time, ci.state[1,], ci.state[3,], col = "lightblue")
 points(time, y.aegypti, pch = 16)
 axis(1, at = at, labels = year.month[at])
@@ -209,7 +209,7 @@ N.months = length(year.month)
 # indexing vector, only puts 7 dates on the axis
 at <- seq(1, N.months, length.out = 7)
 
-plot(time, ci.state[2,], main = paste("Aedes albopictus", "\n", "California: Orange County"),pch="", xaxt= "n", xlab = "Year - Month", ylab = "Individual Ades albopictus")
+plot(time, ci.state[2,], main = paste("Aedes albopictus", "\n", "California: San Diego County"),pch="", xaxt= "n", xlab = "Year - Month", ylab = "Individual Ades albopictus")
 ciEnvelope(time, ci.state[1,], ci.state[3,], col = "lightblue")
 points(time, y.albo, pch = 16)
 axis(1, at = at, labels = year.month[at]) 
@@ -279,7 +279,7 @@ N.months = length(year.month)
 # indexing vector, only puts 7 dates on the axis
 at <- seq(1, N.months, length.out = 7)
 
-plot(time, ci.state[2,], main = paste("Aedes albopictus", "\n", "Florida: Hillsborough County"),pch="", xaxt= "n", xlab = "Year - Month", ylab = "Individual Ades albopictus")
+plot(time, ci.state[2,], main = paste("Aedes albopictus", "\n", "Florida: Polk County"),pch="", xaxt= "n", xlab = "Year - Month", ylab = "Individual Ades albopictus")
 ciEnvelope(time, ci.state[1,], ci.state[3,], col = "lightblue")
 points(time, y.albo, pch = 16)
 axis(1, at = at, labels = year.month[at]) 
