@@ -282,7 +282,7 @@ par(mfrow=c(2,2))
 
 sp <- aegypti
 nmc = 500
-sites = 1:11 ##CHANGED THIS TO ONLY RUN CA ORANGE AND FL HILLSBORO, CHANGE BACK TO 1:11 FOR ALL
+sites = c(4,10) ##CHANGED THIS TO ONLY RUN CA ORANGE AND FL HILLSBORO, CHANGE BACK TO 1:11 FOR ALL
 Nt = 12
 aegypti.forecast.mean <- aegypti.forecast.var <- list()
 for(S in sites){
@@ -381,7 +381,7 @@ for(S in sites){
 
 sp <- albopictus
 nmc = 500
-sites = 1:11 ##CHANGED THIS TO ONLY RUN CA ORANGE AND FL HILLSBORO, CHANGE BACK TO 1:11 FOR ALL
+sites = c(4,10) ##CHANGED THIS TO ONLY RUN CA ORANGE AND FL HILLSBORO, CHANGE BACK TO 1:11 FOR ALL
 Nt = 12
 albopictus.forecast.mean <- albopictus.forecast.var <- list()
 for(S in sites){
