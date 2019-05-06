@@ -45,7 +45,7 @@ for(i in albopictus.files){
 
 ## NOTE the following MUST be included before calling plot.run() (see lines 59-65 and 152-161)
 sp = aegypti #or albopictus
-state <- as.matrix(sp[[s]]$out$predict)
+state <- as.matrix(sp[[s]]$predict)
 ci.state <- apply(state,2,quantile,c(0.025,0.5,0.975))
 time <- 1:ncol(ci.state)
 summary(sp)
@@ -62,7 +62,7 @@ par(mfrow=c(2,2))
 # aegypti plots
 sp <- aegypti
 for(s in 1:length(sp)){
-  state <- as.matrix(sp[[s]]$out$predict)
+  state <- as.matrix(sp[[s]]$predict)
   ci.state <- apply(state,2,quantile,c(0.025,0.5,0.975)) 
   time <- 1:ncol(ci.state)
   plot.run(s,time)
@@ -71,7 +71,7 @@ for(s in 1:length(sp)){
 # albopictus plots
 sp <- albopictus
 for(s in 1:length(sp)){
-  state <- as.matrix(sp[[s]]$out$predict)
+  state <- as.matrix(sp[[s]]$predict)
   ci.state <- apply(state,2,quantile,c(0.025,0.5,0.975)) 
   time <- 1:ncol(ci.state)
   plot.run(s,time)
@@ -142,7 +142,7 @@ calc.inputs <- function(sp,s,NT){
   met.means <- cbind(rep(1, NT), met.means) # 4 cols, 6 rows
 
 
-  params <- as.matrix(sp[[s]]$out$params)
+  params <- as.matrix(sp[[s]]$params)
   param.mean <- apply(params,2,mean) # betas & tau
   IC <- as.matrix(sp[[s]]$out$predict) # initial conditions
 
@@ -171,7 +171,7 @@ par(mfrow=c(1,1))
 
 # define inputs necessary
 sp <- aegypti # species
-state <- as.matrix(sp[[s]]$out$predict) # get predictions
+state <- as.matrix(sp[[s]]$predict) # get predictions
 ci.state <- apply(state,2,quantile,c(0.025,0.5,0.975)) # confidence intervals for predictions
 time <- 1:ncol(ci.state) # time length of fit 
 time2 <- seq(ncol(ci.state)+1,ncol(ci.state)+NT) # length of forecast (beginning @ next time step after length of fit ends)
@@ -289,7 +289,7 @@ for(S in sites){
   
   var <- calc.inputs(sp, S, Nt)
   
-  st <- as.matrix(sp[[S]]$out$predict) # get predictions
+  st <- as.matrix(sp[[S]]$predict) # get predictions
   ci.state <- apply(st,2,quantile,c(0.025,0.5,0.975)) # confidence intervals for predictions
   time <- 1:ncol(ci.state) # time length of fit 
   time2 <- seq(ncol(ci.state)+1,ncol(ci.state)+Nt) # length of forecast (beginning @ next time step after length of fit ends)
@@ -386,7 +386,7 @@ for(S in sites){
   
   var <- calc.inputs(sp, S, Nt)
   
-  st <- as.matrix(sp[[S]]$out$predict) # get predictions
+  st <- as.matrix(sp[[S]]$predict) # get predictions
   ci.state <- apply(st,2,quantile,c(0.025,0.5,0.975)) # confidence intervals for predictions
   time <- 1:ncol(ci.state) # time length of fit 
   time2 <- seq(ncol(ci.state)+1,ncol(ci.state)+Nt) # length of forecast (beginning @ next time step after length of fit ends)
